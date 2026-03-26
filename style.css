@@ -1,0 +1,1134 @@
+/* style.css — Wedding Invitation Baroque Theme */
+/* Tema: Luxury Romantic Baroque | Naira & Usamah */
+
+/* ==========================================
+   GOOGLE FONTS IMPORT
+   ========================================== */
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap');
+
+/* ==========================================
+   CSS VARIABLES
+   ========================================== */
+:root {
+  --pink-primary:   #C07A8A;
+  --pink-light:     #E8C5CC;
+  --pink-pale:      #F5EAED;
+  --rose-dark:      #8B4A58;
+  --rose-deep:      #6B3040;
+  --lavender:       #A89DC0;
+  --sage:           #8BAE8C;
+  --off-white:      #FAF7F4;
+  --warm-cream:     #F0E8E0;
+  --text-dark:      #4A2E38;
+  --text-muted:     #8B7078;
+  --gold:           #C8A882;
+  --gold-light:     #E8D5B0;
+
+  --font-script:    'Great Vibes', cursive;
+  --font-serif:     'Cormorant Garamond', serif;
+  --font-sans:      'Montserrat', sans-serif;
+
+  --section-pad:    4rem 1.5rem;
+  --transition:     0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================
+   RESET & BASE
+   ========================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-serif);
+  background-color: var(--off-white);
+  color: var(--text-dark);
+  overflow-x: hidden;
+  line-height: 1.7;
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+
+/* ==========================================
+   TYPOGRAPHY
+   ========================================== */
+.font-script  { font-family: var(--font-script); }
+.font-serif   { font-family: var(--font-serif); }
+.font-sans    { font-family: var(--font-sans); }
+
+h1.couple-name {
+  font-family: var(--font-script);
+  font-size: clamp(3rem, 12vw, 5.5rem);
+  color: var(--rose-dark);
+  line-height: 1.1;
+  text-align: center;
+}
+
+h2.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rose-dark);
+  text-align: center;
+}
+
+.wedding-of {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(0.9rem, 3vw, 1.1rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ==========================================
+   BACKGROUND — PARALLAX ARCHITECTURE
+   ========================================== */
+.bg-architecture {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 120%;
+  object-fit: cover;
+  opacity: 0.2;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.section-bg-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ==========================================
+   BAROQUE FRAME
+   ========================================== */
+.baroque-frame {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0;
+}
+
+/* ==========================================
+   SECTION 1 — SPLASH SCREEN
+   ========================================== */
+#splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--off-white);
+  text-align: center;
+  padding: 2rem 1.5rem;
+  overflow: hidden;
+  transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.8s ease;
+}
+
+#splash.hide {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-date {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  color: var(--pink-primary);
+  margin: 0.5rem 0 1rem;
+}
+
+.splash-guest-label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.splash-guest-name {
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 4vw, 1.3rem);
+  font-weight: 500;
+  color: var(--rose-dark);
+  margin-bottom: 2rem;
+}
+
+/* Flowers — sisi kiri & kanan */
+.flowers-left,
+.flowers-right {
+  position: absolute;
+  bottom: -20px;
+  width: 55%;
+  max-width: 260px;
+  pointer-events: none;
+  z-index: 5;
+  transition: transform 1s cubic-bezier(0.2, 0, 0.2, 1), opacity 0.8s ease;
+}
+
+.flowers-left  { left: -40%; transform: translateX(0); opacity: 0; }
+.flowers-right { right: -40%; transform: translateX(0); opacity: 0; }
+
+.flowers-left.flowers-entered  {
+  left: -10%;
+  opacity: 1;
+  transform: translateX(0);
+}
+.flowers-right.flowers-entered {
+  right: -10%;
+  opacity: 1;
+}
+
+@keyframes flowerSway {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  50%       { transform: rotate(2deg) translateY(-8px); }
+}
+
+.flowers-left.flowers-entered  { animation: flowerSway 5s ease-in-out 1.2s infinite; }
+.flowers-right.flowers-entered { animation: flowerSway 5.5s ease-in-out 1.5s infinite alternate; }
+
+/* Flowers bottom (hamparan bawah) */
+.flowers-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110%;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* ==========================================
+   CTA BUTTON
+   ========================================== */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--rose-dark);
+  color: var(--off-white);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  padding: 12px 28px;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  position: relative;
+  z-index: 10;
+}
+
+.btn-primary:hover {
+  background: var(--rose-deep);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--rose-dark);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  padding: 10px 22px;
+  border-radius: 50px;
+  border: 1px solid var(--pink-light);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  background: var(--pink-pale);
+}
+
+/* ==========================================
+   SECTION 2 — HERO
+   ========================================== */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--section-pad);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.castle-hero {
+  width: min(280px, 70vw);
+  margin: 0 auto 1.5rem;
+  filter: drop-shadow(0 8px 20px rgba(192, 122, 138, 0.25));
+}
+
+.ayat-suci {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  max-width: 320px;
+  margin: 1rem auto 2rem;
+  line-height: 1.8;
+  border-left: 2px solid var(--pink-light);
+  padding-left: 1rem;
+  text-align: left;
+}
+
+/* ==========================================
+   FLIP CLOCK
+   ========================================== */
+.countdown-wrapper {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.flip-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.flip-card {
+  background: var(--rose-dark);
+  color: var(--off-white);
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 7vw, 2.8rem);
+  font-weight: 300;
+  width: clamp(60px, 18vw, 80px);
+  height: clamp(70px, 20vw, 90px);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s;
+  box-shadow: 0 4px 12px rgba(107, 48, 64, 0.2);
+}
+
+.flip-card::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(255,255,255,0.15);
+}
+
+.flip-unit.flipping .flip-card {
+  animation: flipDigit 0.3s ease;
+}
+
+@keyframes flipDigit {
+  0%   { transform: rotateX(0deg); }
+  50%  { transform: rotateX(-90deg); }
+  100% { transform: rotateX(0deg); }
+}
+
+.flip-label {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ==========================================
+   SECTION 3 — PROFIL MEMPELAI
+   ========================================== */
+#profil {
+  padding: var(--section-pad);
+  background: var(--warm-cream);
+  text-align: center;
+}
+
+.profil-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  max-width: 480px;
+  margin: 2rem auto 0;
+}
+
+@media (min-width: 480px) {
+  .profil-grid {
+    flex-direction: row;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  .profil-card { flex: 1; }
+}
+
+.profil-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.profil-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--pink-light);
+  box-shadow: 0 6px 20px rgba(192, 122, 138, 0.2);
+}
+
+.profil-divider {
+  font-family: var(--font-script);
+  font-size: 2.5rem;
+  color: var(--pink-primary);
+  align-self: center;
+  margin-top: 2rem;
+}
+
+.profil-name-full {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.profil-parent {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.profil-ig {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  color: var(--pink-primary);
+  letter-spacing: 0.05em;
+}
+
+/* ==========================================
+   SECTION 4 — LOVE STORY
+   ========================================== */
+#love-story {
+  padding: var(--section-pad);
+  position: relative;
+}
+
+.love-story-intro {
+  font-family: var(--font-serif);
+  font-style: italic;
+  text-align: center;
+  color: var(--text-muted);
+  max-width: 320px;
+  margin: 0.75rem auto 2.5rem;
+  font-size: 0.95rem;
+}
+
+.timeline {
+  max-width: 420px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--pink-light) 10%, var(--pink-light) 90%, transparent);
+}
+
+.timeline-item {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding-left: 0.5rem;
+}
+
+.timeline-dot {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--off-white);
+  border: 2px solid var(--pink-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  position: relative;
+  z-index: 1;
+  margin-top: 4px;
+}
+
+.timeline-content { flex: 1; }
+
+.timeline-date {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--pink-primary);
+  margin-bottom: 0.25rem;
+}
+
+.timeline-title {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 0.25rem;
+}
+
+.timeline-text {
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* ==========================================
+   SECTION 5 — DETAIL ACARA
+   ========================================== */
+#acara {
+  padding: var(--section-pad);
+  background: var(--warm-cream);
+  text-align: center;
+}
+
+.event-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 420px;
+  margin: 2rem auto 0;
+}
+
+.event-card {
+  background: var(--off-white);
+  border: 1px solid var(--pink-light);
+  border-radius: 16px;
+  padding: 1.75rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.event-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--pink-light), var(--rose-dark), var(--pink-light));
+}
+
+.event-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+
+.event-name {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--rose-dark);
+  letter-spacing: 0.05em;
+}
+
+.event-datetime {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0.5rem 0;
+  letter-spacing: 0.05em;
+}
+
+.event-venue {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.btn-maps {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--pink-pale);
+  color: var(--rose-dark);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  padding: 8px 20px;
+  border-radius: 50px;
+  border: 1px solid var(--pink-light);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s;
+}
+
+.btn-maps:hover { background: var(--pink-light); }
+
+/* ==========================================
+   SECTION 6 — GALERI
+   ========================================== */
+#galeri {
+  padding: var(--section-pad);
+}
+
+.galeri-intro {
+  font-family: var(--font-serif);
+  font-style: italic;
+  text-align: center;
+  color: var(--text-muted);
+  max-width: 320px;
+  margin: 0.5rem auto 2rem;
+  font-size: 0.9rem;
+}
+
+.galeri-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.galeri-item {
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.galeri-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.galeri-item:hover img { transform: scale(1.04); }
+
+/* Lightbox */
+#lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(74, 46, 56, 0.9);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+#lightbox.open { display: flex; }
+
+#lightbox img {
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+#lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  opacity: 0.8;
+}
+
+/* ==========================================
+   SECTION 7 — RSVP
+   ========================================== */
+#rsvp {
+  padding: var(--section-pad);
+  background: var(--warm-cream);
+  text-align: center;
+}
+
+.rsvp-intro {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--text-muted);
+  max-width: 300px;
+  margin: 0.5rem auto 2rem;
+  font-size: 0.9rem;
+}
+
+.rsvp-form {
+  max-width: 360px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-align: left;
+}
+
+.form-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.form-input {
+  background: var(--off-white);
+  border: 1px solid var(--pink-light);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.form-input:focus { border-color: var(--pink-primary); }
+
+.attendance-options {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.att-option {
+  flex: 1;
+  min-width: 80px;
+  background: var(--off-white);
+  border: 1px solid var(--pink-light);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.att-option.selected,
+.att-option:hover {
+  background: var(--pink-pale);
+  border-color: var(--pink-primary);
+  color: var(--rose-dark);
+}
+
+#rsvp-feedback {
+  display: none;
+  background: #d4edda;
+  color: #2d5a3d;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* ==========================================
+   SECTION 8 — AMPLOP DIGITAL
+   ========================================== */
+#amplop {
+  padding: var(--section-pad);
+  text-align: center;
+}
+
+.amplop-intro {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--text-muted);
+  max-width: 300px;
+  margin: 0.5rem auto 2rem;
+  font-size: 0.9rem;
+}
+
+.rekening-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 360px;
+  margin: 0 auto 2rem;
+}
+
+.rekening-card {
+  background: var(--off-white);
+  border: 1px solid var(--pink-light);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.bank-name {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--pink-primary);
+}
+
+.rek-number {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  letter-spacing: 0.1em;
+}
+
+.rek-owner {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.btn-copy {
+  align-self: flex-start;
+  background: var(--pink-pale);
+  color: var(--rose-dark);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  padding: 7px 16px;
+  border-radius: 50px;
+  border: 1px solid var(--pink-light);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-copy:hover { background: var(--pink-light); }
+
+.kado-fisik {
+  max-width: 360px;
+  margin: 0 auto;
+  background: var(--warm-cream);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  text-align: left;
+}
+
+.kado-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.kado-address {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  line-height: 1.7;
+}
+
+/* ==========================================
+   SECTION 9 — BUKU TAMU
+   ========================================== */
+#buku-tamu {
+  padding: var(--section-pad);
+  background: var(--warm-cream);
+  text-align: center;
+}
+
+.wish-intro {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--text-muted);
+  max-width: 300px;
+  margin: 0.5rem auto 2rem;
+  font-size: 0.9rem;
+}
+
+.wish-counter {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.counter-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.counter-number {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--rose-dark);
+}
+
+.counter-label {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.wish-form {
+  max-width: 360px;
+  margin: 0 auto 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+textarea.form-input {
+  min-height: 90px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.wishes-list {
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wish-bubble {
+  background: var(--off-white);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  text-align: left;
+  border-left: 3px solid var(--pink-light);
+}
+
+.wish-bubble-name {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--pink-primary);
+  margin-bottom: 0.25rem;
+}
+
+.wish-bubble-text {
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+/* ==========================================
+   SECTION 10 — CLOSING
+   ========================================== */
+#closing {
+  padding: 5rem 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.closing-message {
+  font-family: var(--font-serif);
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
+  color: var(--text-dark);
+  max-width: 320px;
+  line-height: 1.8;
+  margin: 1rem auto 2rem;
+}
+
+.closing-credit {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  margin-top: 3rem;
+}
+
+/* Confetti */
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  pointer-events: none;
+  animation: confettiFall 3s ease-in forwards;
+}
+
+@keyframes confettiFall {
+  0%   { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ==========================================
+   SCROLL REVEAL ANIMATIONS
+   ========================================== */
+[data-reveal] {
+  opacity: 0;
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+[data-reveal="up"]    { transform: translateY(40px); }
+[data-reveal="left"]  { transform: translateX(-50px); }
+[data-reveal="right"] { transform: translateX(50px); }
+[data-reveal="fade"]  { transform: scale(0.96); }
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: translate(0) scale(1);
+}
+
+/* Stagger delays */
+[data-delay="1"] { transition-delay: 0.1s; }
+[data-delay="2"] { transition-delay: 0.2s; }
+[data-delay="3"] { transition-delay: 0.3s; }
+[data-delay="4"] { transition-delay: 0.4s; }
+[data-delay="5"] { transition-delay: 0.5s; }
+[data-delay="6"] { transition-delay: 0.6s; }
+
+/* ==========================================
+   FLOAT ANIMATION
+   ========================================== */
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+/* ==========================================
+   PETAL FALL
+   ========================================== */
+@keyframes petalFall {
+  0%   { top: -60px; transform: translateX(0) rotate(0deg); opacity: 0.9; }
+  30%  { transform: translateX(calc(var(--sway) * 0.3)) rotate(120deg); }
+  60%  { transform: translateX(calc(var(--sway) * 0.7)) rotate(240deg); }
+  100% { top: 110vh; transform: translateX(var(--sway)) rotate(360deg); opacity: 0; }
+}
+
+/* ==========================================
+   SPARKLE TWINKLE
+   ========================================== */
+@keyframes sparkleTwinkle {
+  0%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  50%       { opacity: 1; transform: scale(1) rotate(20deg); }
+}
+
+/* ==========================================
+   ORNAMENT DIVIDER
+   ========================================== */
+.ornament-divider {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  display: block;
+  opacity: 0.7;
+}
+
+/* ==========================================
+   FLOATING MUSIC BUTTON
+   ========================================== */
+#music-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--rose-dark);
+  color: white;
+  border: none;
+  cursor: pointer;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 14px rgba(107, 48, 64, 0.35);
+  transition: transform 0.2s;
+}
+
+#music-btn.playing { animation: rotateNote 4s linear infinite; }
+#music-btn:hover    { transform: scale(1.08); }
+
+@keyframes rotateNote {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ==========================================
+   DOT NAVIGATION
+   ========================================== */
+#dot-nav {
+  position: fixed;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 80;
+}
+
+.dot-item {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pink-light);
+  border: 1px solid var(--pink-primary);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.dot-item.active {
+  background: var(--rose-dark);
+  transform: scale(1.3);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+@media (max-width: 400px) {
+  :root { --section-pad: 3rem 1.2rem; }
+  .countdown-wrapper { gap: 0.5rem; }
+  .galeri-grid { gap: 4px; }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+   ========================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

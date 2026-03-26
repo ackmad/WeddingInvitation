@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Undangan Pernikahan — Naira & Usamah, 29 Maret 2026"/>
+  <title>The Wedding of Naira & Usamah</title>
+  <link rel="stylesheet" href="style.css"/>
+
+  <!-- Google Fonts sudah di-import di style.css via @import -->
+
+  <style>
+    /* ============================================
+       INLINE OVERRIDE: Konfigurasi data pasangan
+       Ganti nilai di bagian ini sesuai pasangan
+       ============================================ */
+  </style>
+</head>
+
+<body>
+
+<!-- ============================================================
+     FLOATING UI — Musik & Dot Nav (selalu visible)
+     ============================================================ -->
+<button id="music-btn" aria-label="Play/Pause musik" title="Musik">♪</button>
+<audio id="bg-music" loop preload="none">
+  <source src="assets/music-background.mp3" type="audio/mpeg"/>
+</audio>
+
+<nav id="dot-nav" aria-label="Section navigation">
+  <div class="dot-item active" data-target="splash"    title="Cover"></div>
+  <div class="dot-item"        data-target="hero"       title="Home"></div>
+  <div class="dot-item"        data-target="profil"     title="Profil"></div>
+  <div class="dot-item"        data-target="love-story" title="Love Story"></div>
+  <div class="dot-item"        data-target="acara"      title="Acara"></div>
+  <div class="dot-item"        data-target="galeri"     title="Galeri"></div>
+  <div class="dot-item"        data-target="rsvp"       title="RSVP"></div>
+  <div class="dot-item"        data-target="amplop"     title="Amplop"></div>
+  <div class="dot-item"        data-target="buku-tamu"  title="Ucapan"></div>
+  <div class="dot-item"        data-target="closing"    title="Closing"></div>
+</nav>
+
+<!-- ============================================================
+     BAROQUE FRAME — fixed overlay di atas semua section
+     ============================================================ -->
+<img src="assets/frame-baroque.png"
+     alt=""
+     class="baroque-frame"
+     aria-hidden="true"/>
+
+<!-- ============================================================
+     SECTION 1 — SPLASH SCREEN
+     ============================================================ -->
+<section id="splash">
+
+  <!-- Background arsitektur (parallax) -->
+  <img src="assets/bg-architecture.jpg"
+       alt=""
+       class="bg-architecture"
+       data-parallax="0.15"
+       aria-hidden="true"/>
+
+  <!-- Bunga kiri -->
+  <img src="assets/flowers-left.png"
+       alt=""
+       class="flowers-left"
+       aria-hidden="true"/>
+
+  <!-- Bunga kanan -->
+  <img src="assets/flowers-right.png"
+       alt=""
+       class="flowers-right"
+       aria-hidden="true"/>
+
+  <!-- Konten teks -->
+  <div style="position:relative;z-index:10;text-align:center;">
+
+    <p class="wedding-of" data-reveal="fade">The Wedding of</p>
+
+    <h1 class="couple-name" style="margin:0.3rem 0;" data-reveal="fade" data-delay="1">
+      Naira<br/>
+      <span style="font-size:0.6em;color:var(--pink-primary);">&</span><br/>
+      Usamah
+    </h1>
+
+    <p class="splash-date" data-reveal="up" data-delay="2">29 . 03 . 26</p>
+
+    <p class="splash-guest-label" data-reveal="up" data-delay="3">Kepada Yth.</p>
+    <p class="splash-guest-name"  data-reveal="up" data-delay="4" id="guest-name">Tamu Undangan</p>
+
+    <button class="btn-primary"
+            data-reveal="up"
+            data-delay="5"
+            onclick="openInvitation()"
+            style="margin-top:0.5rem;">
+      ✉ Buka &amp; Baca Kisah Kami
+    </button>
+
+  </div>
+
+  <!-- Bunga bawah -->
+  <img src="assets/flowers-bottom.png"
+       alt=""
+       class="flowers-bottom"
+       aria-hidden="true"/>
+
+</section>
+
+<!-- ============================================================
+     SECTION 2 — HERO
+     ============================================================ -->
+<section id="hero" class="section-bg-wrapper has-sparkles">
+
+  <img src="assets/bg-architecture.jpg"
+       alt=""
+       class="bg-architecture"
+       data-parallax="0.2"
+       aria-hidden="true"/>
+
+  <!-- Castle ilustrasi -->
+  <img src="assets/castle-pink.png"
+       alt="Kastil romantis"
+       class="castle-hero"
+       data-reveal="fade"
+       data-float="3.5"/>
+
+  <p class="wedding-of" data-reveal="fade" data-delay="1">The Wedding of</p>
+
+  <h1 class="couple-name" data-reveal="up" data-delay="2">
+    Naira &amp; Usamah
+  </h1>
+
+  <!-- Ayat suci -->
+  <blockquote class="ayat-suci" data-reveal="fade" data-delay="3">
+    "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu
+    istri-istri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram
+    kepadanya."
+    <cite style="display:block;margin-top:0.5rem;font-size:0.8rem;font-style:normal;">
+      — QS. Ar-Rum: 21
+    </cite>
+  </blockquote>
+
+  <!-- FLIP CLOCK COUNTDOWN -->
+  <div class="countdown-wrapper" data-reveal="up" data-delay="4">
+    <div class="flip-unit flip-days">
+      <div class="flip-card"><span class="flip-value">00</span></div>
+      <span class="flip-label">Hari</span>
+    </div>
+    <div class="flip-unit flip-hours">
+      <div class="flip-card"><span class="flip-value">00</span></div>
+      <span class="flip-label">Jam</span>
+    </div>
+    <div class="flip-unit flip-minutes">
+      <div class="flip-card"><span class="flip-value">00</span></div>
+      <span class="flip-label">Menit</span>
+    </div>
+    <div class="flip-unit flip-seconds">
+      <div class="flip-card"><span class="flip-value">00</span></div>
+      <span class="flip-label">Detik</span>
+    </div>
+  </div>
+
+  <!-- Save to Calendar -->
+  <div style="display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;margin-top:1rem;"
+       data-reveal="up" data-delay="5">
+    <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Pernikahan+Naira+%26+Usamah&dates=20260329T010000Z/20260329T070000Z&details=Akad+%26+Resepsi+Pernikahan&location=Nama+Gedung"
+       target="_blank"
+       class="btn-secondary">
+      📅 Google Calendar
+    </a>
+    <a href="data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ADTSTART:20260329T010000Z%0ADTEND:20260329T070000Z%0ASUMMARY:Pernikahan Naira & Usamah%0AEND:VEVENT%0AEND:VCALENDAR"
+       download="pernikahan-naira-usamah.ics"
+       class="btn-secondary">
+      🍎 Apple Calendar
+    </a>
+  </div>
+
+  <!-- Ornamen bawah hero -->
+  <img src="assets/ornament-scroll.svg"
+       alt=""
+       class="ornament-divider"
+       style="margin-top:3rem;opacity:0.5;"
+       data-reveal="fade"
+       data-delay="6"/>
+
+</section>
+
+<!-- ============================================================
+     SECTION 3 — PROFIL MEMPELAI
+     ============================================================ -->
+<section id="profil">
+
+  <img src="assets/ornament-scroll.svg" alt="" class="ornament-divider" style="margin-bottom:2rem;" data-reveal="fade"/>
+  <h2 class="section-title" data-reveal="up">Mempelai</h2>
+
+  <div class="profil-grid">
+
+    <!-- Mempelai Wanita -->
+    <div class="profil-card" data-reveal="left" data-delay="1">
+      <img src="assets/photo-wanita.jpg"
+           alt="Foto Naira"
+           class="profil-photo"/>
+      <p class="profil-name-full">Naira Salsabila</p>
+      <p class="profil-parent">
+        Putri dari Bapak Ahmad Fauzi<br/>
+        &amp; Ibu Siti Rahma
+      </p>
+      <a href="https://instagram.com/naira.sal" target="_blank" class="profil-ig">@naira.sal</a>
+    </div>
+
+    <!-- Ampersand / divider -->
+    <div class="profil-divider" data-reveal="fade" data-delay="2">&amp;</div>
+
+    <!-- Mempelai Pria -->
+    <div class="profil-card" data-reveal="right" data-delay="1">
+      <img src="assets/photo-pria.jpg"
+           alt="Foto Usamah"
+           class="profil-photo"/>
+      <p class="profil-name-full">Usamah Fadillah</p>
+      <p class="profil-parent">
+        Putra dari Bapak Hasan Basri<br/>
+        &amp; Ibu Laila Noor
+      </p>
+      <a href="https://instagram.com/usamah.fdl" target="_blank" class="profil-ig">@usamah.fdl</a>
+    </div>
+
+  </div>
+
+  <img src="assets/ornament-scroll.svg" alt="" class="ornament-divider" style="margin-top:3rem;" data-reveal="fade"/>
+
+</section>
+
+<!-- ============================================================
+     SECTION 4 — LOVE STORY
+     ============================================================ -->
+<section id="love-story" class="section-bg-wrapper">
+
+  <img src="assets/bg-architecture.jpg"
+       alt=""
+       class="bg-architecture"
+       data-parallax="0.25"
+       aria-hidden="true"/>
+
+  <div style="position:relative;z-index:2;">
+
+    <h2 class="section-title" data-reveal="up">Kisah Cinta</h2>
+    <p class="love-story-intro" data-reveal="fade" data-delay="1">
+      Setiap cinta punya ceritanya sendiri. Ini cerita kami —
+      dan kamu adalah bagian dari perjalanannya.
+    </p>
+
+    <div class="timeline">
+
+      <div class="timeline-item" data-reveal="left" data-delay="1">
+        <div class="timeline-dot">🌸</div>
+        <div class="timeline-content">
+          <p class="timeline-date">November 2021</p>
+          <h3 class="timeline-title">Awal Pertemuan</h3>
+          <p class="timeline-text">
+            Kami pertama kali bertemu di sebuah acara seminar kampus.
+            Tatapan pertama itu terasa berbeda — seperti halaman pertama
+            sebuah buku yang tak ingin berhenti dibaca.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item" data-reveal="right" data-delay="2">
+        <div class="timeline-dot">💌</div>
+        <div class="timeline-content">
+          <p class="timeline-date">Maret 2022</p>
+          <h3 class="timeline-title">Mulai Mengenal</h3>
+          <p class="timeline-text">
+            Percakapan pertama berlanjut menjadi diskusi panjang tentang
+            banyak hal. Kami menyadari betapa banyak mimpi yang kami
+            bagi bersama.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item" data-reveal="left" data-delay="3">
+        <div class="timeline-dot">🌹</div>
+        <div class="timeline-content">
+          <p class="timeline-date">Agustus 2023</p>
+          <h3 class="timeline-title">Ta'aruf Resmi</h3>
+          <p class="timeline-text">
+            Dengan restu keluarga, kami memulai proses ta'aruf secara
+            resmi. Setiap langkah terasa lebih ringan karena dijalani
+            bersama doa dan niat yang tulus.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item" data-reveal="right" data-delay="4">
+        <div class="timeline-dot">💍</div>
+        <div class="timeline-content">
+          <p class="timeline-date">Januari 2026</p>
+          <h3 class="timeline-title">Lamaran</h3>
+          <p class="timeline-text">
+            Di hari yang penuh kebahagiaan, ia menggenggam tanganku
+            dan bertanya. Jawabanku sudah ada sejak lama di dalam hati.
+          </p>
+        </div>
+      </div>
+
+      <div class="timeline-item" data-reveal="up" data-delay="5">
+        <div class="timeline-dot">🕌</div>
+        <div class="timeline-content">
+          <p class="timeline-date">29 Maret 2026</p>
+          <h3 class="timeline-title">Hari yang Dinantikan</h3>
+          <p class="timeline-text">
+            Dan kini saatnya kami melengkapi separuh dien kami.
+            Kami sangat ingin kamu hadir dan menjadi saksi di hari
+            paling indah dalam hidup kami.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================================================
+     SECTION 5 — DETAIL ACARA
+     ============================================================ -->
+<section id="acara">
+
+  <img src="assets/ornament-scroll.svg" alt="" class="ornament-divider" style="margin-bottom:2rem;" data-reveal="fade"/>
+  <h2 class="section-title" data-reveal="up">Detail Acara</h2>
+
+  <div class="event-cards">
+
+    <!-- Akad Nikah -->
+    <div class="event-card" data-reveal="left" data-delay="1">
+      <div class="event-icon">🕌</div>
+      <p class="event-name">Akad Nikah</p>
+      <p class="event-datetime">Minggu, 29 Maret 2026 | 08.00 – 10.00 WIB</p>
+      <p class="event-venue">
+        Masjid Al-Hikmah<br/>
+        <span style="font-size:0.8rem;color:var(--text-muted);">
+          Jl. Raya Contoh No. 12, Bandung
+        </span>
+      </p>
+      <a href="https://maps.google.com/?q=Masjid+Al-Hikmah+Bandung"
+         target="_blank"
+         class="btn-maps">
+        📍 Lihat di Maps
+      </a>
+    </div>
+
+    <!-- Resepsi -->
+    <div class="event-card" data-reveal="right" data-delay="2">
+      <div class="event-icon">✨</div>
+      <p class="event-name">Resepsi Pernikahan</p>
+      <p class="event-datetime">Minggu, 29 Maret 2026 | 11.00 – 15.00 WIB</p>
+      <p class="event-venue">
+        Grand Ballroom Hotel Contoh<br/>
+        <span style="font-size:0.8rem;color:var(--text-muted);">
+          Jl. Raya Contoh No. 45, Bandung
+        </span>
+      </p>
+      <a href="https://maps.google.com/?q=Grand+Ballroom+Hotel+Contoh+Bandung"
+         target="_blank"
+         class="btn-maps">
+        📍 Lihat di Maps
+      </a>
+    </div>
+
+  </div>
+
+  <img src="assets/ornament-scroll.svg" alt="" class="ornament-divider" style="margin-top:3rem;" data-reveal="fade"/>
+
+</section>
+
+<!-- ============================================================
+     SECTION 6 — GALERI FOTO
+     ============================================================ -->
+<section id="galeri">
+
+  <h2 class="section-title" data-reveal="up">Galeri</h2>
+  <p class="galeri-intro" data-reveal="fade" data-delay="1">
+    Setiap foto menyimpan rasa. Setiap momen adalah doa yang terjawab.
+  </p>
+
+  <div class="galeri-grid" data-reveal="up" data-delay="2">
+    <!-- Ganti src dengan foto prewedding asli -->
+    <div class="galeri-item" onclick="openLightbox('assets/foto-1.jpg')">
+      <img src="assets/foto-1.jpg" alt="Foto 1" loading="lazy"/>
+    </div>
+    <div class="galeri-item" onclick="openLightbox('assets/foto-2.jpg')">
+      <img src="assets/foto-2.jpg" alt="Foto 2" loading="lazy"/>
+    </div>
+    <div class="galeri-item" onclick="openLightbox('assets/foto-3.jpg')">
+      <img src="assets/foto-3.jpg" alt="Foto 3" loading="lazy"/>
+    </div>
+    <div class="galeri-item" onclick="openLightbox('assets/foto-4.jpg')">
+      <img src="assets/foto-4.jpg" alt="Foto 4" loading="lazy"/>
+    </div>
+    <div class="galeri-item" onclick="openLightbox('assets/foto-5.jpg')">
+      <img src="assets/foto-5.jpg" alt="Foto 5" loading="lazy"/>
+    </div>
+    <div class="galeri-item" onclick="openLightbox('assets/foto-6.jpg')">
+      <img src="assets/foto-6.jpg" alt="Foto 6" loading="lazy"/>
+    </div>
+    <div class="galeri-item" onclick="openLightbox('assets/foto-7.jpg')">
+      <img src="assets/foto-7.jpg" alt="Foto 7" loading="lazy"/>
+    </div>
+    <div class="galeri-item" onclick="openLightbox('assets/foto-8.jpg')">
+      <img src="assets/foto-8.jpg" alt="Foto 8" loading="lazy"/>
+    </div>
+    <div class="galeri-item" onclick="openLightbox('assets/foto-9.jpg')">
+      <img src="assets/foto-9.jpg" alt="Foto 9" loading="lazy"/>
+    </div>
+  </div>
+
+</section>
+
+<!-- Lightbox -->
+<div id="lightbox" role="dialog" aria-modal="true" onclick="closeLightbox()">
+  <span id="lightbox-close" aria-label="Tutup">✕</span>
+  <img id="lightbox-img" src="" alt="Foto besar"/>
+</div>
+
+<!-- ============================================================
+     SECTION 7 — RSVP
+     ============================================================ -->
+<section id="rsvp">
+
+  <img src="assets/ornament-scroll.svg" alt="" class="ornament-divider" style="margin-bottom:2rem;" data-reveal="fade"/>
+  <h2 class="section-title" data-reveal="up">Konfirmasi Kehadiran</h2>
+  <p class="rsvp-intro" data-reveal="fade" data-delay="1">
+    Kami sangat ingin kamu ada di hari istimewa ini.
+    Konfirmasi kehadiranmu ya 💌
+  </p>
+
+  <div class="rsvp-form">
+
+    <div class="form-field" data-reveal="left" data-delay="1">
+      <label class="form-label" for="rsvp-name">Nama</label>
+      <input class="form-input"
+             type="text"
+             id="rsvp-name"
+             placeholder="Nama lengkap kamu"/>
+    </div>
+
+    <div class="form-field" data-reveal="right" data-delay="2">
+      <label class="form-label">Kehadiran</label>
+      <div class="attendance-options" id="attendance-opts">
+        <div class="att-option" onclick="selectAttendance(this, '1 orang')">Hadir (1 orang)</div>
+        <div class="att-option" onclick="selectAttendance(this, '2 orang')">Hadir (2 orang)</div>
+        <div class="att-option" onclick="selectAttendance(this, 'tidak hadir')">Tidak Hadir</div>
+      </div>
+    </div>
+
+    <button class="btn-primary"
+            data-reveal="up"
+            data-delay="3"
+            onclick="submitRSVPForm()"
+            style="width:100%;justify-content:center;">
+      Kirim Konfirmasi via WhatsApp
+    </button>
+
+    <div id="rsvp-feedback" role="status">
+      ✓ Terima kasih sudah konfirmasi! Sampai jumpa di hari istimewa kami 🌸
+    </div>
+
+  </div>
+
+  <img src="assets/ornament-scroll.svg" alt="" class="ornament-divider" style="margin-top:3rem;" data-reveal="fade"/>
+
+</section>
+
+<!-- ============================================================
+     SECTION 8 — AMPLOP DIGITAL
+     ============================================================ -->
+<section id="amplop">
+
+  <h2 class="section-title" data-reveal="up">Amplop Digital</h2>
+  <p class="amplop-intro" data-reveal="fade" data-delay="1">
+    Doa dan kehadiranmu sudah lebih dari cukup. Namun jika kamu ingin
+    memberi lebih, kami menerimanya dengan sepenuh hati.
+  </p>
+
+  <div class="rekening-cards">
+
+    <!-- Rekening 1 -->
+    <div class="rekening-card" data-reveal="left" data-delay="1">
+      <p class="bank-name">BCA</p>
+      <p class="rek-number">1234567890</p>
+      <p class="rek-owner">a.n. Naira Salsabila</p>
+      <button class="btn-copy" onclick="copyRekening('1234567890')">
+        Salin Nomor
+      </button>
+    </div>
+
+    <!-- Rekening 2 -->
+    <div class="rekening-card" data-reveal="right" data-delay="2">
+      <p class="bank-name">Mandiri</p>
+      <p class="rek-number">0987654321</p>
+      <p class="rek-owner">a.n. Usamah Fadillah</p>
+      <button class="btn-copy" onclick="copyRekening('0987654321')">
+        Salin Nomor
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Konfirmasi transfer via WA -->
+  <div style="max-width:360px;margin:0 auto 2rem;text-align:center;" data-reveal="up" data-delay="3">
+    <button class="btn-primary" onclick="confirmGiftWA()" style="width:100%;justify-content:center;">
+      Konfirmasi Transfer via WhatsApp
+    </button>
+  </div>
+
+  <!-- Kado fisik -->
+  <div class="kado-fisik" data-reveal="up" data-delay="4">
+    <p class="kado-label">📦 Kirim kado fisik ke</p>
+    <p class="kado-address">
+      Naira Salsabila<br/>
+      Jl. Contoh No. 10, RT 01/RW 02<br/>
+      Bandung, Jawa Barat 40123
+    </p>
+  </div>
+
+</section>
+
+<!-- ============================================================
+     SECTION 9 — BUKU TAMU
+     ============================================================ -->
+<section id="buku-tamu">
+
+  <img src="assets/ornament-scroll.svg" alt="" class="ornament-divider" style="margin-bottom:2rem;" data-reveal="fade"/>
+  <h2 class="section-title" data-reveal="up">Buku Tamu</h2>
+  <p class="wish-intro" data-reveal="fade" data-delay="1">
+    Tuliskan doa dan harapanmu untuk perjalanan kami.
+    Setiap kata darimu akan kami simpan selamanya.
+  </p>
+
+  <!-- Counter real-time (dummy data — bisa diganti dengan backend/Firebase) -->
+  <div class="wish-counter" data-reveal="up" data-delay="2">
+    <div class="counter-item">
+      <span class="counter-number" id="count-hadir">--</span>
+      <span class="counter-label">Konfirmasi Hadir</span>
+    </div>
+    <div class="counter-item">
+      <span class="counter-number" id="count-wish">--</span>
+      <span class="counter-label">Ucapan Terkirim</span>
+    </div>
+  </div>
+
+  <!-- Form ucapan -->
+  <div class="wish-form">
+    <div class="form-field" data-reveal="left" data-delay="1">
+      <label class="form-label" for="wish-name">Nama</label>
+      <input class="form-input"
+             type="text"
+             id="wish-name"
+             placeholder="Nama kamu"/>
+    </div>
+    <div class="form-field" data-reveal="right" data-delay="2">
+      <label class="form-label" for="wish-text">Ucapan & Doa</label>
+      <textarea class="form-input"
+                id="wish-text"
+                placeholder="Tuliskan doa dan ucapanmu…"></textarea>
+    </div>
+    <button class="btn-primary"
+            data-reveal="up"
+            data-delay="3"
+            onclick="submitWishForm()"
+            style="width:100%;justify-content:center;">
+      Kirim Ucapan via WhatsApp
+    </button>
+  </div>
+
+  <!-- Sample ucapan publik -->
+  <div class="wishes-list" data-reveal="up" data-delay="4">
+    <div class="wish-bubble">
+      <p class="wish-bubble-name">Rizky Pratama</p>
+      <p class="wish-bubble-text">Selamat ya kak! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah 🤍</p>
+    </div>
+    <div class="wish-bubble">
+      <p class="wish-bubble-name">Aulia Rahmah</p>
+      <p class="wish-bubble-text">Barakallah untuk kakak berdua, semoga langgeng selamanya dan segera dikaruniai keturunan yang sholeh/sholehah 🌸</p>
+    </div>
+  </div>
+
+  <img src="assets/ornament-scroll.svg" alt="" class="ornament-divider" style="margin-top:3rem;" data-reveal="fade"/>
+
+</section>
+
+<!-- ============================================================
+     SECTION 10 — CLOSING
+     ============================================================ -->
+<section id="closing" class="section-bg-wrapper has-sparkles">
+
+  <img src="assets/bg-architecture.jpg"
+       alt=""
+       class="bg-architecture"
+       data-parallax="0.3"
+       aria-hidden="true"/>
+
+  <div style="position:relative;z-index:2;">
+
+    <p class="wedding-of" data-reveal="fade">29 . 03 . 26</p>
+
+    <h1 class="couple-name" data-reveal="up" data-delay="1">
+      Naira &amp; Usamah
+    </h1>
+
+    <p class="closing-message" data-reveal="fade" data-delay="2">
+      Sampai jumpa di hari paling bahagia dalam hidup kami.
+      Terima kasih sudah menjadi bagian dari cerita ini. 🤍
+    </p>
+
+    <!-- Bunga dekoratif bawah -->
+    <img src="assets/flowers-bottom.png"
+         alt=""
+         style="max-width:340px;margin:0 auto;"
+         data-reveal="up"
+         data-delay="3"
+         aria-hidden="true"/>
+
+    <!-- Tombol share -->
+    <div style="margin-top:1.5rem;" data-reveal="up" data-delay="4">
+      <button class="btn-primary" onclick="shareInvitation()">
+        🔗 Bagikan Undangan
+      </button>
+    </div>
+
+    <p class="closing-credit">
+      Made with ❤ &nbsp;·&nbsp; Digital Wedding Invitation 2026
+    </p>
+
+  </div>
+
+</section>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script src="animation.js"></script>
+<script>
+/* ============================================================
+   KONFIGURASI — ganti sesuai data pasangan
+   ============================================================ */
+const CONFIG = {
+  groomName:   'Usamah',
+  brideName:   'Naira',
+  weddingDate: '2026-03-29T08:00:00',
+  waNumber:    '6281234567890',  /* Nomor WA tanpa + */
+};
+
+/* ============================================================
+   PERSONALISASI NAMA TAMU DARI URL
+   Contoh URL: index.html?tamu=Mamah+Videl
+   ============================================================ */
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const nama   = params.get('tamu');
+  if (nama) {
+    document.getElementById('guest-name').textContent = nama;
+  }
+})();
+
+/* ============================================================
+   BUKA UNDANGAN — sembunyikan splash, tampilkan konten
+   ============================================================ */
+function openInvitation() {
+  const splash = document.getElementById('splash');
+  splash.classList.add('hide');
+
+  /* Autoplay musik setelah user gesture */
+  const audio = document.getElementById('bg-music');
+  if (audio) {
+    audio.play().catch(() => {});
+    document.getElementById('music-btn').classList.add('playing');
+  }
+
+  /* Scroll ke hero setelah transisi */
+  setTimeout(() => {
+    document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
+    splash.style.display = 'none';
+  }, 850);
+
+  /* Mulai confetti jika hari-H */
+  const today = new Date();
+  const wedding = new Date(CONFIG.weddingDate);
+  if (today.toDateString() === wedding.toDateString()) {
+    launchConfetti();
+  }
+}
+
+/* ============================================================
+   LIGHTBOX
+   ============================================================ */
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+
+/* ============================================================
+   ATTENDANCE SELECTION
+   ============================================================ */
+let selectedAttendance = '';
+
+function selectAttendance(el, value) {
+  document.querySelectorAll('.att-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedAttendance = value;
+}
+
+/* ============================================================
+   SUBMIT RSVP
+   ============================================================ */
+function submitRSVPForm() {
+  const name = document.getElementById('rsvp-name').value.trim();
+  if (!name) { alert('Mohon isi nama terlebih dahulu.'); return; }
+  if (!selectedAttendance) { alert('Mohon pilih konfirmasi kehadiran.'); return; }
+  submitRSVP(name, selectedAttendance, CONFIG.waNumber);
+}
+
+/* ============================================================
+   SUBMIT WISH
+   ============================================================ */
+function submitWishForm() {
+  const name = document.getElementById('wish-name').value.trim();
+  const text = document.getElementById('wish-text').value.trim();
+  if (!name || !text) { alert('Mohon isi nama dan ucapan.'); return; }
+  submitWish(name, text, CONFIG.waNumber);
+}
+
+/* ============================================================
+   CONFIRM GIFT via WA
+   ============================================================ */
+function confirmGiftWA() {
+  const msg = encodeURIComponent(
+    `Halo, saya ingin mengkonfirmasi pengiriman hadiah pernikahan untuk ${CONFIG.brideName} & ${CONFIG.groomName} 💍`
+  );
+  window.open(`https://wa.me/${CONFIG.waNumber}?text=${msg}`, '_blank');
+}
+
+/* ============================================================
+   SHARE INVITATION
+   ============================================================ */
+function shareInvitation() {
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({
+      title : `The Wedding of ${CONFIG.brideName} & ${CONFIG.groomName}`,
+      text  : `Kamu diundang ke pernikahan ${CONFIG.brideName} & ${CONFIG.groomName} 🌸`,
+      url,
+    }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      alert('Link undangan berhasil disalin!');
+    });
+  }
+}
+
+/* ============================================================
+   CONFETTI — hanya di hari H
+   ============================================================ */
+function launchConfetti() {
+  const colors = ['#C07A8A','#E8C5CC','#A89DC0','#C8A882','#F5EAED','#8BAE8C'];
+  const closing = document.getElementById('closing');
+
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.classList.add('confetti-piece');
+      c.style.cssText = `
+        left: ${Math.random() * 100}%;
+        top: -20px;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        width: ${Math.random() * 10 + 5}px;
+        height: ${Math.random() * 10 + 5}px;
+        border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+        animation-duration: ${Math.random() * 2 + 2}s;
+        animation-delay: ${Math.random() * 2}s;
+      `;
+      closing.appendChild(c);
+      setTimeout(() => c.remove(), 5000);
+    }, i * 80);
+  }
+}
+
+/* ============================================================
+   DOT NAVIGATION — update active dot saat scroll
+   ============================================================ */
+const sections = ['splash','hero','profil','love-story','acara','galeri','rsvp','amplop','buku-tamu','closing'];
+const dots = document.querySelectorAll('.dot-item');
+
+dots.forEach((dot, i) => {
+  dot.addEventListener('click', () => {
+    const target = document.getElementById(dot.dataset.target);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+const sectionObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = sections.indexOf(entry.target.id);
+      dots.forEach(d => d.classList.remove('active'));
+      if (dots[idx]) dots[idx].classList.add('active');
+    }
+  });
+}, { threshold: 0.5 });
+
+sections.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) sectionObserver.observe(el);
+});
+
+/* ============================================================
+   INIT COUNTDOWN setelah DOM ready
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  initFlipClock(CONFIG.weddingDate);
+});
+</script>
+
+</body>
+</html>

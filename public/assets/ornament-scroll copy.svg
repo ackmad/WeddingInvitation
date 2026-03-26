@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 80" width="680" height="80">
+  <g fill="none" stroke="#C07A8A" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Horizontal lines -->
+    <line x1="40" y1="40" x2="220" y2="40" stroke-width="0.8" stroke-opacity="0.5"/>
+    <line x1="460" y1="40" x2="640" y2="40" stroke-width="0.8" stroke-opacity="0.5"/>
+    <!-- Left scroll curl -->
+    <path d="M220 40 Q230 28 245 32 Q258 36 252 48 Q246 60 230 54 Q214 48 224 36 Q234 24 248 30" stroke-width="1" stroke-opacity="0.7"/>
+    <!-- Right scroll curl -->
+    <path d="M460 40 Q450 28 435 32 Q422 36 428 48 Q434 60 450 54 Q466 48 456 36 Q446 24 432 30" stroke-width="1" stroke-opacity="0.7"/>
+    <!-- Center urn top -->
+    <path d="M320 18 Q340 12 360 18 L358 28 Q340 22 322 28 Z" stroke-width="0.8" stroke-opacity="0.6" fill="#C07A8A" fill-opacity="0.15"/>
+    <!-- Center urn body -->
+    <path d="M325 28 L322 44 Q340 50 358 44 L355 28 Q340 34 325 28 Z" stroke-width="0.8" stroke-opacity="0.6" fill="#C07A8A" fill-opacity="0.1"/>
+    <!-- Center urn base -->
+    <path d="M318 44 Q340 52 362 44 L364 50 Q340 60 316 50 Z" stroke-width="0.8" stroke-opacity="0.5" fill="#C07A8A" fill-opacity="0.12"/>
+    <!-- Left leaf pair -->
+    <path d="M270 38 Q280 28 295 32 Q285 42 270 38 Z" stroke-width="0.7" stroke-opacity="0.5" fill="#C07A8A" fill-opacity="0.1"/>
+    <path d="M270 42 Q280 52 295 48 Q285 38 270 42 Z" stroke-width="0.7" stroke-opacity="0.5" fill="#C07A8A" fill-opacity="0.1"/>
+    <!-- Right leaf pair -->
+    <path d="M410 38 Q400 28 385 32 Q395 42 410 38 Z" stroke-width="0.7" stroke-opacity="0.5" fill="#C07A8A" fill-opacity="0.1"/>
+    <path d="M410 42 Q400 52 385 48 Q395 38 410 42 Z" stroke-width="0.7" stroke-opacity="0.5" fill="#C07A8A" fill-opacity="0.1"/>
+    <!-- Decorative dots -->
+    <circle cx="340" cy="14" r="2" fill="#C07A8A" fill-opacity="0.5" stroke="none"/>
+    <circle cx="250" cy="40" r="1.5" fill="#C07A8A" fill-opacity="0.4" stroke="none"/>
+    <circle cx="430" cy="40" r="1.5" fill="#C07A8A" fill-opacity="0.4" stroke="none"/>
+    <circle cx="160" cy="40" r="1" fill="#C07A8A" fill-opacity="0.3" stroke="none"/>
+    <circle cx="520" cy="40" r="1" fill="#C07A8A" fill-opacity="0.3" stroke="none"/>
+    <circle cx="100" cy="40" r="0.8" fill="#C07A8A" fill-opacity="0.25" stroke="none"/>
+    <circle cx="580" cy="40" r="0.8" fill="#C07A8A" fill-opacity="0.25" stroke="none"/>
+  </g>
+</svg>

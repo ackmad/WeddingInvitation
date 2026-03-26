@@ -1,0 +1,220 @@
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: var(--off-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Backgrounds & Frames */
+.bgArch {
+  position: absolute;
+  inset: -10%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.25;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  transform: scale(1.05); /* slightly larger for parallax later */
+}
+
+.frameBaroque {
+  position: absolute;
+  inset: 0;
+  background-size: 100% 100%;
+  background-position: center;
+  pointer-events: none;
+  z-index: 2;
+  mix-blend-mode: multiply;
+}
+
+.flowerLeft {
+  position: absolute;
+  left: -20px;
+  top: 10%;
+  width: min(350px, 45vw);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.flowerRight {
+  position: absolute;
+  right: -20px;
+  bottom: 20%;
+  width: min(300px, 40vw);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.flowerBottom {
+  position: absolute;
+  bottom: -40px;
+  left: 0;
+  width: 100%;
+  height: min(250px, 30vh);
+  background-size: contain;
+  background-position: bottom center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.9;
+}
+
+/* Content */
+.content {
+  text-align: center;
+  padding: 40px 24px;
+  position: relative;
+  z-index: 5;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s ease 0.5s, transform 1s ease 0.5s;
+  max-width: 600px;
+  width: 100%;
+}
+
+.contentVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.invitation {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #b89080;
+  margin-bottom: 24px;
+}
+
+/* Couple name */
+.coupleName {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-style: italic;
+  color: #5c4033;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  line-height: 1;
+  text-shadow: 0 2px 10px rgba(255,255,255,0.8);
+}
+
+.nameLeft,
+.nameRight {
+  font-size: clamp(3rem, 12vw, 5.5rem);
+}
+
+.ampersand {
+  font-size: clamp(2rem, 7vw, 4rem);
+  color: #c4b0d8;
+  font-weight: 300;
+}
+
+.date {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  letter-spacing: 6px;
+  color: #8b6d5c;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto 32px;
+  max-width: 200px;
+}
+.divider img {
+  width: 100%;
+  height: auto;
+  opacity: 0.8;
+}
+
+/* Guest box */
+.guestBox {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(212, 132, 155, 0.3);
+  border-radius: 12px;
+  padding: 20px 28px;
+  margin-bottom: 32px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 40px rgba(92, 64, 51, 0.08);
+}
+
+.guestLabel {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: #b89080;
+  margin-bottom: 6px;
+}
+
+.guestName {
+  font-family: var(--font-serif);
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 600;
+  color: #5c4033;
+  font-style: italic;
+  margin-bottom: 6px;
+}
+
+.guestNote {
+  font-size: 0.82rem;
+  color: #8b6d5c;
+  font-style: italic;
+}
+
+/* Open button */
+.openBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #d4849b, #a895c4);
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  border-radius: 5px;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 8px 32px rgba(212, 132, 155, 0.4);
+}
+
+.openBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(212, 132, 155, 0.5);
+  opacity: 0.95;
+}
+
+.openBtn:active {
+  transform: translateY(-1px);
+}
+
+.arrow {
+  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+}
+
+.openBtn:hover .arrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 480px) {
+  .content { padding: 24px 20px; }
+  .guestBox { padding: 16px 20px; }
+  .openBtn { padding: 14px 32px; font-size: 0.85rem; }
+  .flowerLeft { width: 220px; top: 5%; }
+  .flowerRight { width: 180px; bottom: 15%; right: -30px; }
+}
