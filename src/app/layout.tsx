@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Quicksand } from "next/font/google";
 import "./globals.css";
+import configData from "../data/weddingConfig.json";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -15,7 +16,7 @@ const quicksand = Quicksand({
 });
 
 export const metadata: Metadata = {
-  title: "The Wedding of Naira & Usamah",
+  title: `The Wedding of ${configData.bride.nickname} & ${configData.groom.nickname}`,
   description:
     "Dengan penuh rasa syukur dan kebahagiaan, kami mengundang Anda untuk hadir dan merayakan hari istimewa kami.",
 };

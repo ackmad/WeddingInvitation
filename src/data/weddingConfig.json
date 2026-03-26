@@ -1,0 +1,137 @@
+{
+  "bride": {
+    "nickname": "Elfan",
+    "fullName": "Ackmad Elfan Purnama",
+    "parents": "Putri dari Bapak Irfan Purnama\n& Ibu Elvina Rahmawati",
+    "instagram": "@naira_ashalina",
+    "instagramLink": "#",
+    "photoUrl": "https://images.unsplash.com/photo-1524638431109-93d95c2f11bc?auto=format&fit=crop&w=400&q=80"
+  },
+  "groom": {
+    "nickname": "GoYounjung",
+    "fullName": "Go Youn-jung",
+    "parents": "Putra dari Bapak ...\n& Ibu ...",
+    "instagram": "@usamah.fatih",
+    "instagramLink": "#",
+    "photoUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
+  },
+  "weddingInfo": {
+    "date": "2026-03-29T08:00:00",
+    "dateFormatted": "29 · 03 · 2026",
+    "calendarGoogleLink": "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Pernikahan+Naira+%26+Usamah&dates=20260329T010000Z/20260329T070000Z",
+    "calendarIcsDownload": "data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ASUMMARY:Pernikahan+Naira+%26+Usamah%0ADTSTART:20260329T080000%0ADTEND:20260329T140000%0AEND:VEVENT%0AEND:VCALENDAR"
+  },
+  "contact": {
+    "waNumber": "6281234567890"
+  },
+  "hero": {
+    "quote": "\"Dan di antara tanda-tanda-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya.\"",
+    "verse": "Ar-Rum : 21"
+  },
+  "loveStory": [
+    {
+      "icon": "🏫",
+      "date": "JULI 2019",
+      "title": "Pertemuan Pertama",
+      "text": "Kami pertama kali bertemu saat SMP karena orang tua kami saling mengenal. Walau berbeda kelas, kami sering dipertemukan hingga akhirnya jadi dekat dan terbiasa menghabiskan waktu bersama.",
+      "year": "2019",
+      "dir": "left"
+    },
+    {
+      "icon": "🌸",
+      "date": "2020",
+      "title": "Kisah Berlanjut",
+      "text": "Kami membangun pertemanan dalam sebuah circle kecil. Penuh tawa, cerita, dan kebersamaan yang tanpa sadar membuat hubungan kami semakin berarti, meski saat itu masih kami anggap sekadar teman.",
+      "year": "2020",
+      "dir": "right"
+    },
+    {
+      "icon": "✈️",
+      "date": "2022 - 2024",
+      "title": "Terpisah & Kehilangan",
+      "text": "Setelah lulus, kami berpisah jauh. Ia ke Seoul, aku ke Jerman. Kami sempat menjaga komunikasi, namun waktu membuat kami kehilangan kabar hampir satu tahun, hingga terasa seperti dua orang asing.",
+      "year": "2024",
+      "dir": "left"
+    },
+    {
+      "icon": "❤️",
+      "date": "2028",
+      "title": "Dipertemukan Kembali",
+      "text": "Waktu akhirnya mempertemukan kami kembali di kota dan negara yang sama. Dari pertemanan sederhana di masa sekolah, kini kami memilih untuk melangkah bersama sebagai teman hidup.",
+      "year": "2028",
+      "dir": "right"
+    }
+  ],
+  "events": [
+    {
+      "type": "Akad Nikah",
+      "iconStyle": "akad",
+      "dateStr": "Minggu, 29 Maret 2026",
+      "timeStr": "08:00 – 10:00 WIB",
+      "venueName": "Masjid Raya Al-Barokah",
+      "venueAddress": "Jl. Kerajaan Indah No. 12, Jakarta",
+      "mapsLink": "https://maps.app.goo.gl/",
+      "dir": "left"
+    },
+    {
+      "type": "Resepsi",
+      "iconStyle": "resepsi",
+      "dateStr": "Minggu, 29 Maret 2026",
+      "timeStr": "11:00 – 14:00 WIB",
+      "venueName": "Grand Baroque Ballroom",
+      "venueAddress": "Hotel Royal Palace, Jakarta",
+      "mapsLink": "https://maps.app.goo.gl/",
+      "dir": "right"
+    }
+  ],
+  "gallery": [
+    "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=500&q=80",
+    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=500&q=80",
+    "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=500&q=80",
+    "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=500&q=80",
+    "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=500&q=80",
+    "https://images.unsplash.com/photo-1465495910483-0d6745778274?auto=format&fit=crop&w=500&q=80",
+    "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=500&q=80",
+    "https://images.unsplash.com/photo-1522673607200-164883eecd4c?auto=format&fit=crop&w=500&q=80",
+    "https://images.unsplash.com/photo-1529634597503-139d3726fed5?auto=format&fit=crop&w=500&q=80"
+  ],
+  "bankAccounts": [
+    {
+      "bank": "BCA",
+      "number": "1234567890",
+      "numberFormatted": "123 456 7890",
+      "owner": "a.n Naira Ashalina",
+      "dir": "left"
+    },
+    {
+      "bank": "Mandiri",
+      "number": "0987654321",
+      "numberFormatted": "098 765 4321",
+      "owner": "a.n Usamah Al-Fatih",
+      "dir": "right"
+    }
+  ],
+  "guestBookStats": {
+    "invited": 247,
+    "attending": 89,
+    "wishes": 56
+  },
+  "initialWishes": [
+    {
+      "name": "Rizky Pratama",
+      "text": "Selamat menempuh hidup baru Usamah & Naira! Semoga SAMAWA ya. Barakallah 💕"
+    },
+    {
+      "name": "Sarah Amalia",
+      "text": "Barakallah untuk kalian berdua. Akhirnya sah juga! Semoga langgeng selalu 🌸"
+    },
+    {
+      "name": "Budi Santoso",
+      "text": "Doa terbaik untuk pasangan terhebat. Semoga menjadi keluarga yang sakinah mawaddah warahmah."
+    },
+    {
+      "name": "Dewi Lestari",
+      "text": "Selamat ya! Semoga pernikahan ini menjadi awal dari kisah cinta yang tak pernah berakhir 💍"
+    }
+  ]
+}

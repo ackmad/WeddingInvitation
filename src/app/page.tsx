@@ -1,232 +1,252 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import "./globals.css";
+import configData from "../data/weddingConfig.json";
 
 export default function WeddingPage() {
   const [selectedAttendance, setSelectedAttendance] = useState("");
   const [isOpened, setIsOpened] = useState(false);
-  
+
   const CONFIG = {
-    groomName:   'Usamah',
-    brideName:   'Naira',
-    weddingDate: '2026-03-29T08:00:00',
-    waNumber:    '6281234567890',
+    groomName:   configData.groom.nickname,
+    brideName:   configData.bride.nickname,
+    weddingDate: configData.weddingInfo.date,
+    waNumber:    configData.contact.waNumber,
   };
 
+  /* ── SPARKLE ── */
   const createSparkle = (container: HTMLElement) => {
-    const sparkle = document.createElement('img');
-    sparkle.src = '/assets/sparkle-star.svg';
-    sparkle.classList.add('sparkle');
-    const size = Math.random() * 25 + 10;
-    const x = Math.random() * 95 + 2;
-    const y = Math.random() * 95 + 2;
-    const delay = Math.random() * 3;
-    const duration = Math.random() * 2 + 1;
-    sparkle.style.cssText = `
-      position: absolute;
-      left: ${x}%;
-      top: ${y}%;
-      width: ${size}px;
-      height: ${size}px;
-      opacity: 0;
-      pointer-events: none;
-      animation: sparkleTwinkle ${duration}s ease-in-out ${delay}s infinite;
-      z-index: 2;
-    `;
-    container.appendChild(sparkle);
+    const s = document.createElement('img');
+    s.src = '/assets/sparkle-star.svg';
+    s.className = 'sparkle';
+    const size = Math.random() * 22 + 10;
+    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*94+2}%;top:${Math.random()*94+2}%;opacity:0;animation:sparkleTwinkle ${Math.random()*2+1.5}s ease-in-out ${Math.random()*4}s infinite;`;
+    container.appendChild(s);
   };
 
+  /* ── PETAL ── */
   const createPetal = (container: HTMLElement) => {
-    const petal = document.createElement('div');
-    petal.classList.add('petal');
-    const size = Math.random() * 25 + 15;
+    const p = document.createElement('div');
+    p.classList.add('petal');
+    const size = Math.random() * 22 + 14;
     const startX = Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000);
-    const duration = Math.random() * 5 + 6;
+    const dur = Math.random() * 5 + 6;
     const delay = Math.random() * 5;
-    const sway = (Math.random() - 0.5) * 200;
-    const rotation = Math.random() * 360;
-
-    petal.style.cssText = `
-      position: fixed;
-      top: -60px;
-      left: ${startX}px;
-      width: ${size}px;
-      height: ${size}px;
-      background-image: url('/assets/petal-single.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      pointer-events: none;
-      z-index: 999;
-      transform: rotate(${rotation}deg);
-      animation: petalFall ${duration}s ease-in ${delay}s forwards;
-      --sway: ${sway}px;
-    `;
-    container.appendChild(petal);
+    const sway = (Math.random() - 0.5) * 180;
+    p.style.cssText = `position:fixed;top:-60px;left:${startX}px;width:${size}px;height:${size}px;background-image:url('/assets/petal-single.svg');background-size:contain;background-repeat:no-repeat;pointer-events:none;z-index:998;animation:petalFall ${dur}s ease-in ${delay}s forwards;--sway:${sway}px;`;
+    container.appendChild(p);
     setTimeout(() => {
-      petal.remove();
+      p.remove();
       if (document.getElementById('petal-container')) createPetal(container);
-    }, (duration + delay) * 1000 + 500);
+    }, (dur + delay) * 1000 + 500);
+  };
+
+  /* ── CONFETTI ── */
+  const launchConfetti = () => {
+    const colors = ['#8B4A58','#C8A882','#FAF7F4','#8BAE8C','#A89DC0','#E8C5CC'];
+    const shapes = ['confetti-circle','confetti-diamond',''];
+    for (let i = 0; i < 90; i++) {
+      const c = document.createElement('div');
+      c.className = `confetti-piece ${shapes[i % 3]}`;
+      c.style.cssText = `left:${Math.random()*100}%;background:${colors[i%colors.length]};width:${Math.random()*8+5}px;height:${Math.random()*10+6}px;animation-delay:${Math.random()*0.8}s;animation-duration:${Math.random()*2+2.5}s;`;
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 5000);
+    }
+  };
+  (globalThis as any).launchConfetti = launchConfetti;
+
+  /* ── CURSOR TRAIL ── */
+  const initCursorTrail = () => {
+    const queue: HTMLElement[] = [];
+    const handler = (e: MouseEvent) => {
+      const el = document.createElement('div');
+      el.className = 'cursor-sparkle';
+      el.innerHTML = `<svg width="14" height="14" viewBox="0 0 20 20"><path d="M10 1 L11.5 8.5 L19 10 L11.5 11.5 L10 19 L8.5 11.5 L1 10 L8.5 8.5 Z" fill="#C8A882" opacity="0.8"/></svg>`;
+      el.style.cssText = `left:${e.clientX-7}px;top:${e.clientY-7}px;`;
+      document.body.appendChild(el);
+      queue.push(el);
+      if (queue.length > 8) {
+        const old = queue.shift();
+        old?.remove();
+      }
+      setTimeout(() => { el.remove(); const idx = queue.indexOf(el); if (idx > -1) queue.splice(idx,1); }, 700);
+    };
+    window.addEventListener('mousemove', handler, { passive: true });
+    return () => window.removeEventListener('mousemove', handler);
+  };
+
+  /* ── COUNT UP ── */
+  const animateCountUp = (el: HTMLElement, target: number, duration = 1800) => {
+    let start: number | null = null;
+    const step = (ts: number) => {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      el.textContent = String(Math.floor(progress * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
+  /* ── FLOATING ORNAMENTS ── */
+  const addFloatOrnaments = (section: HTMLElement) => {
+    const svgs = [
+      `<svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 1 L13.5 9.5 L22 11 L13.5 12.5 L12 21 L10.5 12.5 L2 11 L10.5 9.5Z" fill="#C8A882"/></svg>`,
+      `<svg width="20" height="30" viewBox="0 0 20 30"><path d="M10 1 Q16 7 14 17 Q12 25 10 29 Q8 25 6 17 Q4 7 10 1Z" fill="#E8C5CC"/></svg>`,
+      `<svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="3" fill="none" stroke="#C8A882" stroke-width="1"/><path d="M9 2 L9 6 M9 12 L9 16 M2 9 L6 9 M12 9 L16 9" stroke="#C8A882" stroke-width="0.8"/></svg>`,
+    ];
+    for (let i = 0; i < 3; i++) {
+      const o = document.createElement('div');
+      o.className = 'float-ornament';
+      o.innerHTML = svgs[i % svgs.length];
+      o.style.cssText = `left:${[8,80,15,75][i%4]}%;top:${[15,25,65,50][i%4]}%;--float-dur:${7+i*2}s;--float-delay:${i*1.5}s;`;
+      section.appendChild(o);
+    }
   };
 
   useEffect(() => {
-    // Force scroll to top on refresh
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
-    }
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
+    if (!isOpened) document.body.classList.add('locked');
 
-    // Initial scroll lock
-    if (!isOpened) {
-      document.body.classList.add('locked');
-    }
-
-    // Personalisasi nama tamu
     const params = new URLSearchParams(window.location.search);
     const nama = params.get('tamu');
-    if (nama) {
-      const el = document.getElementById('guest-name');
-      if (el) el.textContent = nama;
-    }
+    if (nama) { const el = document.getElementById('guest-name'); if (el) el.textContent = nama; }
 
-    // Scroll Reveal Logic
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          revealObserver.unobserve(entry.target);
-        }
-      });
+    /* Scroll Reveal */
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); revealObs.unobserve(e.target); } });
     }, { threshold: 0.1 });
+    document.querySelectorAll('[data-reveal]').forEach(el => revealObs.observe(el));
 
-    document.querySelectorAll('[data-reveal]').forEach(el => {
-      revealObserver.observe(el);
+    /* Sparkles */
+    document.querySelectorAll('.has-sparkles').forEach(s => {
+      (s as HTMLElement).style.position = 'relative';
+      for (let i = 0; i < 14; i++) createSparkle(s as HTMLElement);
     });
 
-    // Sparkles
-    const initSparkles = () => {
-      document.querySelectorAll('.has-sparkles').forEach(section => {
-        (section as HTMLElement).style.position = 'relative';
-        for (let i = 0; i < 15; i++) {
-          createSparkle(section as HTMLElement);
-        }
-      });
-    };
-    initSparkles();
+    /* Petal rain */
+    const pc = document.createElement('div');
+    pc.id = 'petal-container';
+    pc.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:997;overflow:hidden;';
+    document.body.appendChild(pc);
+    for (let i = 0; i < 12; i++) createPetal(pc);
 
-    // Petal Rain
-    const initPetalRain = () => {
-      const container = document.createElement('div');
-      container.id = 'petal-container';
-      container.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;overflow:hidden;';
-      document.body.appendChild(container);
-      for (let i = 0; i < 15; i++) {
-        createPetal(container);
-      }
-    };
-    initPetalRain();
+    /* Float ornaments in each section */
+    document.querySelectorAll('section').forEach(s => addFloatOrnaments(s as HTMLElement));
 
-    // Parallax & Flower animations
+    /* Parallax */
     const handleParallax = () => {
       if (!isOpened) return;
       const scrollY = window.scrollY;
-      
-      // Background parallax
       document.querySelectorAll('[data-parallax]').forEach(el => {
-        const speed = parseFloat((el as HTMLElement).dataset.parallax || "0.3");
+        const speed = parseFloat((el as HTMLElement).dataset.parallax || '0.15');
         (el as HTMLElement).style.transform = `translateY(${scrollY * speed}px)`;
       });
-
-      // Flower drifting animation based on scroll
       document.querySelectorAll('.section-flowers').forEach((el, i) => {
-        const drift = Math.sin(scrollY * 0.002 + i) * 15;
-        (el as HTMLElement).style.transform = `translateX(${drift}px) translateY(${scrollY * -0.05}px)`;
+        const drift = Math.sin(scrollY * 0.002 + i) * 12;
+        (el as HTMLElement).style.transform = `translateX(${drift}px) translateY(${scrollY * -0.04}px)`;
       });
     };
     window.addEventListener('scroll', handleParallax, { passive: true });
 
-    // Floating Animations
+    /* Float data-float elements */
     document.querySelectorAll('[data-float]').forEach((el, i) => {
-      const duration = parseFloat((el as HTMLElement).dataset.float || "4");
-      const delay = i * 0.5;
-      (el as HTMLElement).style.animation = `floatUpDown ${duration}s ease-in-out ${delay}s infinite`;
+      const dur = parseFloat((el as HTMLElement).dataset.float || '4');
+      (el as HTMLElement).style.animation = `floatUpDown ${dur}s ease-in-out ${i * 0.5}s infinite`;
     });
 
-    // Flower Entrance (Splash)
-    const flowersLeft = document.querySelector('.flowers-left');
-    const flowersRight = document.querySelector('.flowers-right');
-    if (flowersLeft) setTimeout(() => flowersLeft.classList.add('flowers-entered'), 300);
-    if (flowersRight) setTimeout(() => flowersRight.classList.add('flowers-entered'), 500);
+    /* Flower entrance */
+    const fl = document.querySelector('.flowers-left');
+    const fr = document.querySelector('.flowers-right');
+    if (fl) setTimeout(() => fl.classList.add('flowers-entered'), 350);
+    if (fr) setTimeout(() => fr.classList.add('flowers-entered'), 600);
 
-    // Flip Clock
+    /* Flip clock */
     const target = new Date(CONFIG.weddingDate).getTime();
-    const clockInterval = setInterval(() => {
-      const now = new Date().getTime();
-      const diff = target - now;
+    const clockInt = setInterval(() => {
+      const diff = target - Date.now();
       if (diff <= 0) return;
-
-      const days    = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours   = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      const units = { days, hours, minutes, seconds };
-
-      Object.entries(units).forEach(([unit, val]) => {
-        const el = document.querySelector(`.flip-${unit}`);
-        if (!el) return;
-        const valStr = String(val).padStart(2, '0');
-        const current = el.querySelector('.flip-value');
-        if (current && current.textContent !== valStr) {
-          el.classList.add('flipping');
-          setTimeout(() => {
-            if (current) current.textContent = valStr;
-            el.classList.remove('flipping');
-          }, 300);
-        }
+      const days    = Math.floor(diff / 86400000);
+      const hours   = Math.floor((diff % 86400000) / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      Object.entries({ days, hours, minutes, seconds }).forEach(([u, v]) => {
+        const els = document.querySelectorAll(`.flip-${u}`);
+        const vs = String(v).padStart(2,'0');
+        els.forEach(el => {
+          const cur = el.querySelector('.flip-value');
+          if (cur && cur.textContent !== vs) {
+            el.classList.add('flipping');
+            setTimeout(() => { if (cur) cur.textContent = vs; el.classList.remove('flipping'); }, 250);
+          }
+        });
       });
     }, 1000);
 
-    // Dot Nav Dots Sync
-    const sections = ['splash','hero','profil','love-story','acara','galeri','rsvp','amplop','buku-tamu','closing'];
+    /* Dot nav */
+    const sections = ['hero','profil','love-story','acara','galeri','rsvp','amplop','buku-tamu','closing'];
     const dots = document.querySelectorAll('.dot-item');
-    const sectionObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const idx = sections.indexOf(entry.target.id);
-          dots.forEach(d => d.classList.remove('active'));
-          if (dots[idx]) dots[idx].classList.add('active');
+    const secObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const idx = sections.indexOf(e.target.id);
+          if (idx > -1) {
+            dots.forEach(d => d.classList.remove('active'));
+            if (dots[idx]) dots[idx].classList.add('active');
+          }
         }
       });
     }, { threshold: 0.5 });
-    sections.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) sectionObserver.observe(el);
-    });
+    sections.forEach(id => { const el = document.getElementById(id); if (el) secObs.observe(el); });
+
+    /* Count-up on buku-tamu */
+    const countObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          document.querySelectorAll('.counter-number[data-count]').forEach(el => {
+            animateCountUp(el as HTMLElement, parseInt((el as HTMLElement).dataset.count || '0'));
+          });
+          countObs.disconnect();
+        }
+      });
+    }, { threshold: 0.4 });
+    const bukuTamu = document.getElementById('buku-tamu');
+    if (bukuTamu) countObs.observe(bukuTamu);
+
+    /* Confetti on closing section */
+    const closingObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { launchConfetti(); closingObs.disconnect(); } });
+    }, { threshold: 0.35 });
+    const closing = document.getElementById('closing');
+    if (closing) closingObs.observe(closing);
+
+    /* Cursor trail (desktop only) */
+    let cleanupCursor: (() => void) | undefined;
+    if (window.innerWidth > 768) cleanupCursor = initCursorTrail();
 
     return () => {
       window.removeEventListener('scroll', handleParallax);
-      clearInterval(clockInterval);
-      revealObserver.disconnect();
-      sectionObserver.disconnect();
-      const pc = document.getElementById('petal-container');
-      if (pc) pc.remove();
+      clearInterval(clockInt);
+      revealObs.disconnect();
+      secObs.disconnect();
+      countObs.disconnect();
+      closingObs.disconnect();
+      cleanupCursor?.();
+      document.getElementById('petal-container')?.remove();
     };
   }, [isOpened]);
 
   const openInvitation = () => {
     setIsOpened(true);
     document.body.classList.remove('locked');
-    const splash = document.getElementById('splash');
-    if(splash) splash.classList.add('hide');
+    document.getElementById('splash')?.classList.add('hide');
     const audio = document.getElementById('bg-music') as HTMLAudioElement;
-    if (audio) {
-      audio.play().catch(() => {});
-      document.getElementById('music-btn')?.classList.add('playing');
-    }
+    if (audio) { audio.play().catch(()=>{}); document.getElementById('music-btn')?.classList.add('playing'); }
     setTimeout(() => {
       document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
-      if(splash) splash.style.display = 'none';
-      if((window as any).launchConfetti) (window as any).launchConfetti();
-    }, 850);
+      document.getElementById('splash')!.style.display = 'none';
+      launchConfetti();
+    }, 900);
   };
 
   const openLightbox = (src: string) => {
@@ -234,10 +254,7 @@ export default function WeddingPage() {
     if (img) img.src = src;
     document.getElementById('lightbox')?.classList.add('open');
   };
-
-  const closeLightbox = () => {
-    document.getElementById('lightbox')?.classList.remove('open');
-  };
+  const closeLightbox = () => document.getElementById('lightbox')?.classList.remove('open');
 
   const submitRSVPForm = () => {
     const name = (document.getElementById('rsvp-name') as HTMLInputElement)?.value.trim();
@@ -248,9 +265,7 @@ export default function WeddingPage() {
   };
 
   const copyRekening = (nomor: string) => {
-    navigator.clipboard.writeText(nomor).then(() => {
-      alert('Nomor rekening ' + nomor + ' tersalin!');
-    });
+    navigator.clipboard.writeText(nomor).then(() => alert('Nomor rekening ' + nomor + ' tersalin!'));
   };
 
   const confirmGiftWA = () => {
@@ -269,308 +284,424 @@ export default function WeddingPage() {
   const shareInvitation = () => {
     const url = window.location.href;
     if (navigator.share) {
-      navigator.share({
-        title : `The Wedding of ${CONFIG.brideName} & ${CONFIG.groomName}`,
-        text  : `Kamu diundang ke pernikahan ${CONFIG.brideName} & ${CONFIG.groomName} 🌸`,
-        url,
-      }).catch(() => {});
+      navigator.share({ title:`The Wedding of ${CONFIG.brideName} & ${CONFIG.groomName}`, text:`Kamu diundang ke pernikahan ${CONFIG.brideName} & ${CONFIG.groomName} 🌸`, url }).catch(()=>{});
     } else {
-      navigator.clipboard.writeText(url).then(() => {
-        alert('Link undangan berhasil disalin!');
-      });
+      navigator.clipboard.writeText(url).then(() => alert('Link undangan berhasil disalin!'));
     }
   };
 
-  const dummyPhotos = [
-    "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1465495910483-0d6745778274?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1522673607200-164883eecd4c?auto=format&fit=crop&w=400&q=80"
-  ];
+  const dummyPhotos = configData.gallery;
+
+  /* SVGs inline */
+  const FloralDividerSVG = () => (
+    <svg viewBox="0 0 300 30" width="280" height="30" className="floral-divider" aria-hidden="true">
+      <line x1="0" y1="15" x2="95" y2="15" stroke="#C8A882" strokeWidth="0.6" strokeOpacity="0.45"/>
+      <path d="M115 15 Q125 5 135 15 Q145 25 155 15 Q165 5 175 15" stroke="#8B4A58" strokeWidth="0.9" fill="none" strokeOpacity="0.5"/>
+      <circle cx="135" cy="15" r="2.5" fill="#C8A882" fillOpacity="0.7"/>
+      <circle cx="105" cy="15" r="1.5" fill="#8B4A58" fillOpacity="0.3"/>
+      <circle cx="185" cy="15" r="1.5" fill="#8B4A58" fillOpacity="0.3"/>
+      <line x1="205" y1="15" x2="300" y2="15" stroke="#C8A882" strokeWidth="0.6" strokeOpacity="0.45"/>
+    </svg>
+  );
 
   return (
     <>
       <div onClick={(e) => {
-        const target = e.target as HTMLElement;
-        const action = target.getAttribute("data-onclick") || target.parentElement?.getAttribute("data-onclick");
-        if(action) {
-           if(action.includes('openInvitation()')) openInvitation();
-           else if(action.includes('closeLightbox()')) closeLightbox();
-           else if(action.includes('submitRSVPForm()')) submitRSVPForm();
-           else if(action.includes('confirmGiftWA()')) confirmGiftWA();
-           else if(action.includes('submitWishForm()')) submitWishForm();
-           else if(action.includes('shareInvitation()')) shareInvitation();
-           else if(action.includes('openLightbox')) {
-             const m = action.match(/'([^']+)'/);
-             if(m && m[1]) openLightbox(m[1]);
-           } else if(action.includes('copyRekening')) {
-             const m = action.match(/'([^']+)'/);
-             if(m && m[1]) copyRekening(m[1]);
-           } else if(action.includes('selectAttendance')) {
-             const m = action.match(/'([^']+)'/);
-             if(m && m[1]) {
-               document.querySelectorAll('.att-option').forEach(o => o.classList.remove('selected'));
-               target.classList.add('selected');
-               setSelectedAttendance(m[1]);
-             }
-           }
+        const t = e.target as HTMLElement;
+        const action = t.getAttribute('data-onclick') || t.parentElement?.getAttribute('data-onclick');
+        if (!action) return;
+        if (action.includes('openInvitation()')) openInvitation();
+        else if (action.includes('closeLightbox()')) closeLightbox();
+        else if (action.includes('submitRSVPForm()')) submitRSVPForm();
+        else if (action.includes('confirmGiftWA()')) confirmGiftWA();
+        else if (action.includes('submitWishForm()')) submitWishForm();
+        else if (action.includes('shareInvitation()')) shareInvitation();
+        else if (action.includes('openLightbox')) { const m = action.match(/'([^']+)'/); if (m?.[1]) openLightbox(m[1]); }
+        else if (action.includes('copyRekening')) { const m = action.match(/'([^']+)'/); if (m?.[1]) copyRekening(m[1]); }
+        else if (action.includes('scrollToSection')) { const m = action.match(/'([^']+)'/); if (m?.[1]) document.getElementById(m[1])?.scrollIntoView({ behavior: 'smooth' }); }
+        else if (action.includes('selectAttendance')) {
+          const m = action.match(/'([^']+)'/);
+          if (m?.[1]) {
+            document.querySelectorAll('.att-option').forEach(o => o.classList.remove('selected'));
+            t.classList.add('selected');
+            setSelectedAttendance(m[1]);
+          }
         }
       }}>
-        
-        <button id="music-btn" aria-label="Play/Pause musik" title="Musik">♪</button>
+
+        <button id="music-btn" aria-label="Play/Pause musik" title="Musik" style={{opacity: isOpened ? 1 : 0, transition: 'opacity 1s ease 0.8s', pointerEvents: isOpened ? 'auto' : 'none'}}>♪</button>
         <audio id="bg-music" loop preload="none">
-          <source src="/assets/music-background.mp3" type="audio/mpeg"/>
+          <source src="/music/music-background.mp3" type="audio/mpeg"/>
         </audio>
 
-        <nav id="dot-nav" aria-label="Section navigation">
-          {['splash','hero','profil','love-story','acara','galeri','rsvp','amplop','buku-tamu','closing'].map((id, i) => (
-            <div key={id} className={`dot-item ${i===0?'active':''}`} data-target={id} title={id.toUpperCase()}></div>
+        <nav id="dot-nav" aria-label="Section navigation" style={{opacity: isOpened ? 1 : 0, pointerEvents: isOpened ? 'auto' : 'none', transition: 'opacity 1s ease 0.8s'}}>
+          {['hero','profil','love-story','acara','galeri','rsvp','amplop','buku-tamu','closing'].map((id,i) => (
+            <div key={id} className={`dot-item${i===0?' active':''}`} data-onclick={`scrollToSection('${id}')`} title={id}/>
           ))}
         </nav>
 
-        <div className="corner-ornament corner-tl baroque-corner"></div>
-        <div className="corner-ornament corner-tr baroque-corner"></div>
-        <div className="corner-ornament corner-bl baroque-corner"></div>
-        <div className="corner-ornament corner-br baroque-corner"></div>
+        <div className="corner-ornament corner-tl baroque-corner"/>
+        <div className="corner-ornament corner-tr baroque-corner"/>
+        <div className="corner-ornament corner-bl baroque-corner"/>
+        <div className="corner-ornament corner-br baroque-corner"/>
 
-
+        {/* ══════════ SPLASH ══════════ */}
         <section id="splash" className="has-sparkles">
-          <img src="/assets/bg-architecture.jpg" alt="" className="bg-architecture" data-parallax="0.15" />
-          <img src="/assets/flowers-left.png" alt="" className="flowers-left section-flowers" />
-          <img src="/assets/flowers-right.png" alt="" className="flowers-right section-flowers" />
+          <img src="/assets/bg-architecture.jpg" alt="" className="splash-bg" data-parallax="0.1"/>
+          <img src="/assets/frame-baroque.png"   alt="" className="splash-frame"/>
+          <img src="/assets/flowers-left.png"    alt="" className="flowers-left section-flowers"/>
+          <img src="/assets/flowers-right.png"   alt="" className="flowers-right section-flowers"/>
 
-          <div style={{position: "relative", zIndex: 10, textAlign: "center", maxWidth: "900px", padding: '0 20px'}}>
+          <div style={{position:'relative',zIndex:10,textAlign:'center',maxWidth:'900px',padding:'0 20px'}}>
             <p className="wedding-of" data-reveal="fade">The Wedding of</p>
             <h1 className="main-title" data-reveal="up" data-delay="1">
-              Naira <span style={{fontSize: "0.5em", color: "var(--gold)"}}>&</span><br />
-              Usamah
+              {configData.bride.nickname} <span style={{fontSize:'0.45em',color:'var(--gold)'}}>✦</span> {configData.groom.nickname}
             </h1>
-            <p className="splash-date" data-reveal="up" data-delay="2">29 . 03 . 2026</p>
-            
-            <p className="splash-for" data-reveal="up" data-delay="4" style={{fontSize: '1.2rem'}}>Dear,</p>
+            <FloralDividerSVG/>
+            <p className="splash-date" data-reveal="up" data-delay="2">{configData.weddingInfo.dateFormatted}</p>
+            <p className="splash-for"  data-reveal="up" data-delay="3">Dear,</p>
             <p className="splash-guest-name" data-reveal="up" data-delay="4" id="guest-name">Tamu Undangan</p>
-            
-            <div data-reveal="up" data-delay="5" style={{marginTop: '2rem'}}>
+            <div data-reveal="up" data-delay="5" style={{marginTop:'2.5rem'}}>
               <button className="btn-open" data-onclick="openInvitation()">
-                ✉ Buka &amp; Baca Kisah Kami
+                <span style={{animation:'pinBounce 1.5s ease-in-out infinite',display:'inline-block'}}>✉</span>
+                Buka &amp; Baca Kisah Kami
               </button>
             </div>
           </div>
-
-          <img src="/assets/flowers-bottom.png" alt="" className="flowers-bottom section-flowers" />
+          <img src="/assets/flowers-bottom.png" alt="" className="flowers-bottom section-flowers"/>
         </section>
 
+        {/* ══════════ HERO ══════════ */}
+        <section id="hero" className="has-sparkles" style={{background:'linear-gradient(170deg,var(--warm-cream),var(--off-white))'}}>
+          <img src="/assets/castle-pink.png" alt="Kastil" className="castle-hero" data-reveal="fade"/>
+          <div className="castle-shadow"/>
 
-        <section id="hero" className="has-sparkles" style={{background: 'linear-gradient(to bottom, var(--warm-cream), var(--off-white))'}}>
-          <img src="/assets/castle-pink.png" alt="Kastil" className="castle-hero" data-reveal="fade" data-float="4" style={{width: 'min(650px, 95vw)'}}/>
+          <div style={{position:'relative',zIndex:3,textAlign:'center',maxWidth:'820px'}}>
+            <h1 className="hero-names shimmer-name" data-reveal="up">{configData.bride.nickname} &amp; {configData.groom.nickname}</h1>
 
-          <div className="hero-content" style={{textAlign: 'center', maxWidth: '800px'}}>
-            <h1 className="hero-names" data-reveal="up" style={{fontSize: 'clamp(4rem, 15vw, 6.5rem)', marginBottom: '1.5rem'}}>Naira & Usamah</h1>
-            <p className="hero-quote" data-reveal="up" style={{fontSize: '1.4rem', fontStyle: 'italic', color: 'var(--rose-dark)', maxWidth: '600px', margin: '0 auto 2rem', lineHeight: '1.8'}}>
-              "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya."
-            </p>
-            <p className="hero-verse" data-reveal="fade" data-delay="1" style={{fontSize: '1.2rem', fontWeight: 600, color: 'var(--gold)', letterSpacing: '0.2em'}}>AR-RUM: 21</p>
+            <div className="hero-quote-box" data-reveal="fade" data-delay="1">
+              <p className="hero-quote">
+                {configData.hero.quote}
+              </p>
+              <p className="hero-verse">{configData.hero.verse}</p>
+            </div>
+
+            <div className="countdown-wrapper" data-reveal="up" data-delay="2">
+              {['days','hours','minutes','seconds'].map(u => (
+                <div key={u} className={`flip-unit flip-${u}`}>
+                  <div className="flip-card"><span className="flip-value">00</span></div>
+                  <span className="flip-label">{u}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="calendar-btns" data-reveal="fade" data-delay="3">
+              <a href={configData.weddingInfo.calendarGoogleLink}
+                 target="_blank" rel="noreferrer" className="btn-calendar">📅 Google Calendar</a>
+              <a href={configData.weddingInfo.calendarIcsDownload}
+                 download="wedding.ics" className="btn-calendar">🗓 Save to Calendar</a>
+            </div>
           </div>
         </section>
 
-
+        {/* ══════════ PROFIL ══════════ */}
         <section id="profil" className="has-sparkles">
-          <img src="/assets/flowers-left.png" alt="" className="section-flowers" style={{position: 'absolute', top: '-10%', left: '-10%', width: '30%', transform: 'rotate(-45deg)'}} />
-          <img src="/assets/ornament-scroll.svg" alt="" className="ornament-divider" style={{width: '200px', marginBottom: "3rem"}} data-reveal="fade"/>
-          
+          <img src="/assets/ornament-scroll.svg" alt="" className="ornament-divider" style={{width:'220px',marginBottom:'2rem'}} data-reveal="fade"/>
           <h2 className="section-title" data-reveal="up">Mempelai Berbahagia</h2>
-          <p className="section-subtitle" data-reveal="fade" data-delay="1" style={{textAlign: 'center', fontSize: '1.5rem', fontStyle: 'italic', marginBottom: '4rem', color: 'var(--text-muted)'}}>
-            Assalamu’alaikum Warahmatullahi Wabarakatuh
+          <p style={{fontFamily:'var(--font-serif)',fontStyle:'italic',fontSize:'1.3rem',color:'var(--text-muted)',marginBottom:'3.5rem',textAlign:'center'}} data-reveal="fade" data-delay="1">
+            Assalamu'alaikum Warahmatullahi Wabarakatuh
           </p>
 
-          <div className="profil-grid" style={{width: '100%', maxWidth: '1000px'}}>
-            <div className="profil-card" data-reveal="left" style={{textAlign: 'center'}}>
-              <div style={{width: '280px', height: '280px', margin: '0 auto', borderRadius: '50%', overflow: 'hidden', border: '8px solid var(--gold-light)', boxShadow: '0 15px 35px rgba(0,0,0,0.1)'}}>
-                 <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80" alt="Naira" style={{width: '100%', height: '100%', objectFit: 'cover'}}/>
+          <div className="profil-grid">
+            {/* BRIDE */}
+            <div className="profil-card" data-reveal="left">
+              <div className="profil-photo-wrap">
+                {/* Flower crown SVG */}
+                <svg className="flower-crown" viewBox="0 0 80 40" aria-hidden="true">
+                  <path d="M40 35 Q20 20 10 10 Q20 5 30 15 Q35 2 40 8 Q45 2 50 15 Q60 5 70 10 Q60 20 40 35Z" fill="#E8C5CC" opacity="0.8"/>
+                  <path d="M40 35 Q20 20 10 10 Q20 5 30 15 Q35 2 40 8 Q45 2 50 15 Q60 5 70 10 Q60 20 40 35Z" fill="none" stroke="#C8A882" strokeWidth="0.8" opacity="0.6"/>
+                </svg>
+                <div className="profil-photo-inner">
+                  <img src={configData.bride.photoUrl} alt={configData.bride.nickname}/>
+                </div>
               </div>
-              <h3 className="profil-name" style={{fontSize: '2.5rem', marginTop: '2rem'}}>Naira Ashalina</h3>
-              <p className="profil-parent" style={{fontSize: '1.2rem', margin: '1rem 0'}}>
-                Putri tercinta dari Bapak Ahmad <br /> &amp; Ibu Siti Rahma
-              </p>
-              <a href="#" className="profil-ig" style={{fontSize: '1.1rem', color: 'var(--rose-dark)', fontWeight: 600}}>@naira_ashalina</a>
+              <h3 className="profil-name">{configData.bride.fullName}</h3>
+              <p className="profil-parent" style={{whiteSpace:'pre-line'}}>{configData.bride.parents}</p>
+              <a href={configData.bride.instagramLink} className="profil-ig">📸 {configData.bride.instagram}</a>
             </div>
 
-            <div className="profil-divider" data-reveal="fade" data-delay="2" style={{fontSize: '5rem', color: 'var(--pink-light)'}}>&amp;</div>
+            {/* AMPERSAND */}
+            <div className="profil-divider" data-reveal="scale" data-delay="2">&amp;</div>
 
-            <div className="profil-card" data-reveal="right" style={{textAlign: 'center'}}>
-              <div style={{width: '280px', height: '280px', margin: '0 auto', borderRadius: '50%', overflow: 'hidden', border: '8px solid var(--gold-light)', boxShadow: '0 15px 35px rgba(0,0,0,0.1)'}}>
-                <img src="https://images.unsplash.com/photo-1550005816-09246d37748b?auto=format&fit=crop&w=400&q=80" alt="Usamah" style={{width: '100%', height: '100%', objectFit: 'cover'}}/>
+            {/* GROOM */}
+            <div className="profil-card" data-reveal="right">
+              <div className="profil-photo-wrap">
+                <svg className="flower-crown" viewBox="0 0 80 40" aria-hidden="true">
+                  <path d="M40 35 Q20 20 10 10 Q20 5 30 15 Q35 2 40 8 Q45 2 50 15 Q60 5 70 10 Q60 20 40 35Z" fill="#E8C5CC" opacity="0.8"/>
+                  <path d="M40 35 Q20 20 10 10 Q20 5 30 15 Q35 2 40 8 Q45 2 50 15 Q60 5 70 10 Q60 20 40 35Z" fill="none" stroke="#C8A882" strokeWidth="0.8" opacity="0.6"/>
+                </svg>
+                <div className="profil-photo-inner">
+                  <img src={configData.groom.photoUrl} alt={configData.groom.nickname}/>
+                </div>
               </div>
-              <h3 className="profil-name" style={{fontSize: '2.5rem', marginTop: '2rem'}}>Usamah Al-Fatih</h3>
-              <p className="profil-parent" style={{fontSize: '1.2rem', margin: '1rem 0'}}>
-                Putra tercinta dari Bapak Yusuf <br /> &amp; Ibu Laila Noor
-              </p>
-              <a href="#" className="profil-ig" style={{fontSize: '1.1rem', color: 'var(--rose-dark)', fontWeight: 600}}>@usamah.fatih</a>
+              <h3 className="profil-name">{configData.groom.fullName}</h3>
+              <p className="profil-parent" style={{whiteSpace:'pre-line'}}>{configData.groom.parents}</p>
+              <a href={configData.groom.instagramLink} className="profil-ig">📸 {configData.groom.instagram}</a>
             </div>
           </div>
+          <img src="/assets/ornament-scroll.svg" alt="" className="ornament-divider" style={{width:'220px',marginTop:'3.5rem'}} data-reveal="fade"/>
         </section>
 
-
-        <section id="love-story" style={{background: 'var(--warm-cream)'}}>
+        {/* ══════════ LOVE STORY ══════════ */}
+        <section id="love-story">
+          <img src="/assets/bg-architecture.jpg" alt="" className="love-story-bg" data-parallax="0.08"/>
           <h2 className="section-title" data-reveal="up">Kisah Cinta Kami</h2>
-          <p className="love-story-intro" data-reveal="fade" style={{fontSize: '1.3rem', marginBottom: '4rem'}}>Bagaimana takdir mempertemukan dua hati...</p>
+          <p className="love-story-intro" data-reveal="fade" data-delay="1">
+            Bagaimana takdir mempertemukan dua hati yang selalu mencari satu sama lain...
+          </p>
 
-          <div className="timeline" style={{maxWidth: '800px', width: '100%'}}>
-            <div className="timeline-item" data-reveal="left">
-              <div className="timeline-dot" style={{width: '50px', height: '50px', fontSize: '1.5rem'}}>❤</div>
-              <div className="timeline-content" style={{padding: '2rem', borderRadius: '15px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', background: 'white'}}>
-                <p className="timeline-date" style={{fontSize: '1.1rem', color: 'var(--gold)', fontWeight: 700}}>JANUARI 2024</p>
-                <h4 className="timeline-title" style={{fontSize: '1.8rem', margin: '0.8rem 0'}}>Pertemuan Pertama</h4>
-                <p className="timeline-text" style={{fontSize: '1.1rem'}}>Berawal dari pertemuan tak sengaja di sebuah perpustakaan kota, di mana kami berbagi pandangan yang sama tentang sebuah buku.</p>
+          <div className="timeline" style={{maxWidth:'800px',width:'100%'}}>
+            {configData.loveStory.map((item,i) => (
+              <div key={i} className="timeline-item" data-reveal={item.dir}>
+                <div className="timeline-dot" style={{fontSize:'1.2rem'}}>{item.icon}</div>
+                <div className="timeline-content">
+                  <div className="year-bg">{item.year}</div>
+                  <p className="timeline-date">{item.date}</p>
+                  <h4 className="timeline-title">{item.title}</h4>
+                  <p className="timeline-text">{item.text}</p>
+                </div>
               </div>
-            </div>
-
-            <div className="timeline-item" data-reveal="right">
-              <div className="timeline-dot" style={{width: '50px', height: '50px', fontSize: '1.5rem'}}>💍</div>
-              <div className="timeline-content" style={{padding: '2rem', borderRadius: '15px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', background: 'white'}}>
-                <p className="timeline-date" style={{fontSize: '1.1rem', color: 'var(--gold)', fontWeight: 700}}>DESEMBER 2024</p>
-                <h4 className="timeline-title" style={{fontSize: '1.8rem', margin: '0.8rem 0'}}>Lamaran</h4>
-                <p className="timeline-text" style={{fontSize: '1.1rem'}}>Di depan keluarga besar, kami memutuskan untuk mengukuhkan janji untuk melangkah bersama menuju pelaminan.</p>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
-
+        {/* ══════════ ACARA ══════════ */}
         <section id="acara" className="has-sparkles">
           <h2 className="section-title" data-reveal="up">Waktu &amp; Tempat</h2>
-          
-          <div className="countdown-wrapper" data-reveal="fade" style={{gap: '2rem', marginBottom: '5rem'}}>
+          <FloralDividerSVG/>
+
+          <div className="countdown-wrapper" data-reveal="fade" style={{marginBottom:'4rem'}}>
             {['days','hours','minutes','seconds'].map(u => (
               <div key={u} className={`flip-unit flip-${u}`}>
-                <div className="flip-card" style={{width: '90px', height: '110px', fontSize: '3rem'}}>
-                  <span className="flip-value">00</span>
+                <div className="flip-card"><span className="flip-value">00</span></div>
+                <span className="flip-label">{u}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="event-cards">
+            {configData.events.map((ev, i) => (
+              <React.Fragment key={i}>
+                <div className="event-card" data-reveal={ev.dir}>
+                  <div className="event-card-header">
+                    <svg className="event-icon-svg" viewBox="0 0 60 60" aria-hidden="true">
+                      {ev.iconStyle === 'akad' ? (
+                        <>
+                          <path d="M30 5 L36 20 L52 20 L39 30 L44 46 L30 36 L16 46 L21 30 L8 20 L24 20Z" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"/>
+                          <circle cx="30" cy="30" r="8" fill="rgba(255,255,255,0.25)"/>
+                          <path d="M26 30 Q30 20 34 30 Q30 40 26 30Z" fill="rgba(255,255,255,0.5)"/>
+                        </>
+                      ) : (
+                        <>
+                          <path d="M10 45 Q10 25 20 20 Q30 15 30 10 Q30 15 40 20 Q50 25 50 45Z" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"/>
+                          <path d="M20 45 Q20 32 30 28 Q40 32 40 45" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.4)" strokeWidth="1"/>
+                          <line x1="10" y1="45" x2="50" y2="45" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5"/>
+                        </>
+                      )}
+                    </svg>
+                    <h3 className="event-name">{ev.type}</h3>
+                  </div>
+                  <div className="event-card-body">
+                    <p className="event-datetime">{ev.dateStr}</p>
+                    <div className="event-time-ornaments">
+                      <span>✦</span> {ev.timeStr} <span>✦</span>
+                    </div>
+                    <p className="event-venue" style={{whiteSpace:'pre-line'}}>
+                      <strong>{ev.venueName}</strong><br/>
+                      {ev.venueAddress}
+                    </p>
+                    <a href={ev.mapsLink} target="_blank" rel="noreferrer" className="btn-maps">
+                      <span className="pin-pulse">📍</span> Lihat Lokasi
+                    </a>
+                  </div>
                 </div>
-                <span className="flip-label" style={{fontSize: '1rem', marginTop: '1rem'}}>{u.toUpperCase()}</span>
-              </div>
+
+                {i < configData.events.length - 1 && (
+                  <div className="event-baroque-divider" data-reveal="fade">
+                    <svg viewBox="0 0 30 120" width="30" height="120" aria-hidden="true">
+                      <line x1="15" y1="0" x2="15" y2="45" stroke="#C8A882" strokeWidth="0.8" strokeOpacity="0.5"/>
+                      <circle cx="15" cy="60" r="6" fill="none" stroke="#C8A882" strokeWidth="1" strokeOpacity="0.6"/>
+                      <circle cx="15" cy="60" r="2.5" fill="#C8A882" fillOpacity="0.5"/>
+                      <line x1="15" y1="75" x2="15" y2="120" stroke="#C8A882" strokeWidth="0.8" strokeOpacity="0.5"/>
+                    </svg>
+                  </div>
+                )}
+              </React.Fragment>
             ))}
-          </div>
-
-          <div className="event-cards" style={{width: '100%', maxWidth: '1100px', gap: '3rem'}}>
-            <div className="event-card" data-reveal="up" style={{flex: 1, padding: '4rem 2rem', background: 'white', borderRadius: '20px', boxShadow: '0 20px 50px rgba(0,0,0,0.08)'}}>
-              <div className="event-icon" style={{fontSize: '4rem', marginBottom: '2rem'}}>💍</div>
-              <h3 className="event-name" style={{fontSize: '2.2rem', marginBottom: '1.5rem'}}>AKAD NIKAH</h3>
-              <p className="event-datetime" style={{fontSize: '1.2rem', lineHeight: '1.8'}}>Minggu, 29 Maret 2026<br/><strong>08:00 - 10:00 WIB</strong></p>
-              <p className="event-venue" style={{fontSize: '1.1rem', margin: '1.5rem 0', color: 'var(--text-muted)'}}>Masjid Raya Al-Barokah<br/>Jl. Kerajaan Indah No. 12, Jakarta</p>
-              <a href="https://maps.app.goo.gl/..." target="_blank" className="btn-open" style={{fontSize: '1rem', padding: '12px 30px'}}>📍 Lihat Lokasi</a>
-            </div>
-
-            <div className="event-card" data-reveal="up" data-delay="1" style={{flex: 1, padding: '4rem 2rem', background: 'white', borderRadius: '20px', boxShadow: '0 20px 50px rgba(0,0,0,0.08)'}}>
-              <div className="event-icon" style={{fontSize: '4rem', marginBottom: '2rem'}}>✨</div>
-              <h3 className="event-name" style={{fontSize: '2.2rem', marginBottom: '1.5rem'}}>RESEPSI</h3>
-              <p className="event-datetime" style={{fontSize: '1.2rem', lineHeight: '1.8'}}>Minggu, 29 Maret 2026<br/><strong>11:00 - 14:00 WIB</strong></p>
-              <p className="event-venue" style={{fontSize: '1.1rem', margin: '1.5rem 0', color: 'var(--text-muted)'}}>Grand Baroque Ballroom<br/>Hotel Royal Palace, Jakarta</p>
-              <a href="https://maps.app.goo.gl/..." target="_blank" className="btn-open" style={{fontSize: '1rem', padding: '12px 30px'}}>📍 Lihat Lokasi</a>
-            </div>
           </div>
         </section>
 
-
-        <section id="galeri" style={{background: 'var(--warm-cream)'}}>
+        {/* ══════════ GALERI ══════════ */}
+        <section id="galeri">
           <h2 className="section-title" data-reveal="up">Galeri Bahagia</h2>
-          <p className="galeri-intro" data-reveal="fade" style={{fontSize: '1.2rem', marginBottom: '4rem'}}>Momen indah yang tertangkap dalam lensa...</p>
-
-          <div className="galeri-grid" style={{maxWidth: '1200px', gap: '1.5rem'}}>
-            {dummyPhotos.map((src, i) => (
-              <div key={i} className="galeri-item" data-reveal="fade" data-delay={i%3} data-onclick={`openLightbox('${src}')`} style={{borderRadius: '12px', overflow: 'hidden'}}>
-                <img src={src} alt={`Gallery ${i+1}`} style={{width: '100%', aspectRatio: '1', objectFit: 'cover'}}/>
+          <p className="galeri-caption" data-reveal="fade" data-delay="1">
+            Momen indah yang tertangkap dalam lensa...
+          </p>
+          <div className="galeri-masonry" style={{maxWidth:'960px',width:'100%'}}>
+            {dummyPhotos.map((src,i) => (
+              <div key={i} className="galeri-item" data-reveal="fade" data-delay={i%3}
+                   data-onclick={`openLightbox('${src}')`}>
+                <img src={src} alt={`Gallery ${i+1}`} loading="lazy"/>
               </div>
             ))}
           </div>
         </section>
 
-
+        {/* Lightbox */}
         <div id="lightbox" role="dialog" aria-modal="true" data-onclick="closeLightbox()">
           <span id="lightbox-close">✕</span>
           <img id="lightbox-img" src={undefined} alt="Foto"/>
         </div>
 
-
+        {/* ══════════ RSVP ══════════ */}
         <section id="rsvp">
-          <img src="/assets/ornament-scroll.svg" alt="" className="ornament-divider" style={{width: '200px', marginBottom: "3rem"}} />
+          <img src="/assets/ornament-scroll.svg" alt="" className="ornament-divider" style={{width:'200px',marginBottom:'2rem'}} data-reveal="fade"/>
           <h2 className="section-title" data-reveal="up">Konfirmasi Kehadiran</h2>
-          <div className="rsvp-form" style={{maxWidth: '600px', width: '100%', background: 'white', padding: '4rem', borderRadius: '20px', boxShadow: '0 20px 50px rgba(0,0,0,0.05)'}}>
-            <div className="form-field" data-reveal="up">
-              <label className="form-label" style={{fontSize: '1.2rem'}}>Nama Tamu</label>
-              <input type="text" id="rsvp-name" className="form-input" style={{fontSize: '1.1rem', padding: '15px'}} placeholder="Tulis namamu disini..."/>
-            </div>
+          <p style={{fontFamily:'var(--font-serif)',fontStyle:'italic',color:'var(--text-muted)',margin:'0.5rem auto 2.5rem',textAlign:'center'}} data-reveal="fade" data-delay="1">
+            Kehadiran Anda adalah doa terbaik bagi kami
+          </p>
 
-            <div className="form-field" data-reveal="up" data-delay="1">
-              <label className="form-label" style={{fontSize: '1.2rem'}}>Konfirmasi Kehadiran</label>
-              <div className="attendance-options" style={{gap: '1rem'}}>
-                {['Hadir', 'Tidak Hadir', 'Ragu-ragu'].map(opt => (
-                  <div key={opt} className="att-option" data-onclick={`selectAttendance('${opt}')`} style={{padding: '12px 20px', fontSize: '1rem'}}>{opt}</div>
+          <div className="rsvp-form" data-reveal="up" data-delay="2">
+            <div className="form-field">
+              <label className="form-label">Nama Tamu</label>
+              <input type="text" id="rsvp-name" className="form-input" placeholder="Tulis namamu disini..."/>
+            </div>
+            <div className="form-field">
+              <label className="form-label">Konfirmasi Kehadiran</label>
+              <div className="attendance-options">
+                {['Hadir','Tidak Hadir','Ragu-ragu'].map(opt => (
+                  <div key={opt} className="att-option" data-onclick={`selectAttendance('${opt}')`}>{opt}</div>
                 ))}
               </div>
             </div>
-            <button className="btn-open" style={{width: '100%', marginTop: '2rem'}} data-onclick="submitRSVPForm()">
-              Kirim via WhatsApp
+            <button className="btn-open" style={{width:'100%',justifyContent:'center',marginTop:'1rem'}} data-onclick="submitRSVPForm()">
+              💌 Kirim via WhatsApp
             </button>
           </div>
         </section>
 
-
-        <section id="amplop" style={{background: 'var(--warm-cream)'}}>
+        {/* ══════════ AMPLOP ══════════ */}
+        <section id="amplop">
           <h2 className="section-title" data-reveal="up">Kado Pernikahan</h2>
-          <div className="rekening-cards" style={{maxWidth: '900px', gap: '2.5rem'}}>
-            <div className="rekening-card" data-reveal="left" style={{flex: 1, padding: '3rem', background: 'white', borderRadius: '20px'}}>
-              <p className="bank-name" style={{fontSize: '1.3rem', fontWeight: 700}}>BCA</p>
-              <p className="rek-number" style={{fontSize: '2rem', margin: '1rem 0', color: 'var(--gold)'}}>123 456 7890</p>
-              <p className="rek-owner" style={{fontSize: '1.1rem'}}>a.n Naira Ashalina</p>
-              <button className="btn-secondary" style={{marginTop: '1.5rem'}} data-onclick="copyRekening('1234567890')">Salin Rekening</button>
-            </div>
-            <div className="rekening-card" data-reveal="right" style={{flex: 1, padding: '3rem', background: 'white', borderRadius: '20px'}}>
-              <p className="bank-name" style={{fontSize: '1.3rem', fontWeight: 700}}>MANDIRI</p>
-              <p className="rek-number" style={{fontSize: '2rem', margin: '1rem 0', color: 'var(--gold)'}}>098 765 4321</p>
-              <p className="rek-owner" style={{fontSize: '1.1rem'}}>a.n Usamah Al-Fatih</p>
-              <button className="btn-secondary" style={{marginTop: '1.5rem'}} data-onclick="copyRekening('0987654321')">Salin Rekening</button>
-            </div>
+          <p style={{fontFamily:'var(--font-serif)',fontStyle:'italic',color:'var(--text-muted)',margin:'0.5rem auto 1rem',textAlign:'center'}} data-reveal="fade" data-delay="1">
+            Doa restu Anda adalah hadiah terindah. Namun jika ingin berbagi kebaikan:
+          </p>
+          <FloralDividerSVG/>
+
+          <div className="rekening-cards">
+            {configData.bankAccounts.map((acc, i) => (
+              <React.Fragment key={i}>
+                <div className="rekening-card" data-reveal={acc.dir}>
+                  <p className="bank-name">{acc.bank}</p>
+                  <p className="rek-number">{acc.numberFormatted}</p>
+                  <p className="rek-owner">{acc.owner}</p>
+                  <button className="btn-copy" data-onclick={`copyRekening('${acc.number}')`}>📋 Salin Rekening</button>
+                </div>
+                {i < configData.bankAccounts.length - 1 && (
+                  <div style={{display:'flex',alignItems:'center',justifyContent:'center',padding:'0 0.5rem'}}>
+                    <svg viewBox="0 0 30 80" width="30" height="80" aria-hidden="true">
+                      <line x1="15" y1="0" x2="15" y2="28" stroke="#C8A882" strokeWidth="0.8" strokeOpacity="0.5"/>
+                      <circle cx="15" cy="40" r="5" fill="none" stroke="#C8A882" strokeWidth="1" strokeOpacity="0.6"/>
+                      <circle cx="15" cy="40" r="2" fill="#C8A882" fillOpacity="0.5"/>
+                      <line x1="15" y1="52" x2="15" y2="80" stroke="#C8A882" strokeWidth="0.8" strokeOpacity="0.5"/>
+                    </svg>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+
+          <div style={{marginTop:'2rem'}} data-reveal="up">
+            <button className="btn-open" data-onclick="confirmGiftWA()">
+              💚 Konfirmasi via WhatsApp
+            </button>
           </div>
         </section>
 
-
+        {/* ══════════ BUKU TAMU ══════════ */}
         <section id="buku-tamu" className="has-sparkles">
           <h2 className="section-title" data-reveal="up">Ucapan &amp; Doa</h2>
-          <div className="wish-form" style={{maxWidth: '700px', width: '100%', marginBottom: '4rem'}}>
-            <div className="form-field" style={{marginBottom: '1.5rem'}}>
-              <input type="text" id="wish-name" className="form-input" style={{fontSize: '1.1rem', padding: '15px'}} placeholder="Namamu..."/>
+          <FloralDividerSVG/>
+
+          <div className="wish-counter" data-reveal="fade" data-delay="1">
+            <div className="counter-item">
+              <p className="counter-number" data-count={configData.guestBookStats.invited}>0</p>
+              <p className="counter-label">Tamu Diundang</p>
             </div>
-            <div className="form-field" style={{marginBottom: '2rem'}}>
-              <textarea id="wish-text" className="form-input" style={{fontSize: '1.1rem', padding: '15px', height: '120px'}} placeholder="Tulis ucapan disini..."></textarea>
+            <div className="counter-item">
+              <p className="counter-number" data-count={configData.guestBookStats.attending}>0</p>
+              <p className="counter-label">Konfirmasi Hadir</p>
             </div>
-            <button className="btn-open" style={{width: '100%'}} data-onclick="submitWishForm()">Kirim Ucapan</button>
+            <div className="counter-item">
+              <p className="counter-number" data-count={configData.guestBookStats.wishes}>0</p>
+              <p className="counter-label">Ucapan &amp; Doa</p>
+            </div>
           </div>
-          <div className="wishes-list" style={{maxWidth: '700px', width: '100%', gap: '1.5rem'}}>
-             <div className="wish-bubble" style={{padding: '1.5rem', background: 'white', borderRadius: '15px', boxShadow: '0 5px 15px rgba(0,0,0,0.03)'}}>
-               <p style={{fontWeight: 700, fontSize: '1.1rem'}}>Rizky Pratama</p>
-               <p style={{fontSize: '1.05rem', marginTop: '0.5rem'}}>Selamat menempuh hidup baru Usamah & Naira! Semoga SAMAWA ya.</p>
-             </div>
-             <div className="wish-bubble" style={{padding: '1.5rem', background: 'white', borderRadius: '15px', boxShadow: '0 5px 15px rgba(0,0,0,0.03)'}}>
-               <p style={{fontWeight: 700, fontSize: '1.1rem'}}>Sarah Amalia</p>
-               <p style={{fontSize: '1.05rem', marginTop: '0.5rem'}}>Barakallah untuk kalian berdua. Akhirnya sah juga!</p>
-             </div>
+
+          <div className="wish-form" data-reveal="up" data-delay="2">
+            <input type="text" id="wish-name" className="form-input" placeholder="Nama kamu..."/>
+            <textarea id="wish-text" className="form-input" placeholder="Tulis ucapan dan doa terbaikmu di sini..."/>
+            <button className="btn-open" style={{width:'100%',justifyContent:'center'}} data-onclick="submitWishForm()">
+              ✉ Kirim Ucapan
+            </button>
+          </div>
+
+          <div className="wishes-list" data-reveal="up">
+            {configData.initialWishes.map((w,i) => (
+              <div key={i} className="wish-bubble" data-reveal="up" data-delay={i%3 as number}>
+                <p className="wish-bubble-name">{w.name}</p>
+                <p className="wish-bubble-text">"{w.text}"</p>
+              </div>
+            ))}
           </div>
         </section>
 
-
+        {/* ══════════ CLOSING ══════════ */}
         <section id="closing">
-          <img src="/assets/flowers-bottom.png" alt="" className="section-flowers" style={{width: '60%', maxWidth: '600px', marginBottom: '3rem'}} />
-          <p className="closing-message" style={{fontSize: '1.5rem', maxWidth: '800px', textAlign: 'center', lineHeight: '2', marginBottom: '3rem'}}>
-            Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu bagi kami.
-          </p>
-          <h2 className="hero-names" style={{fontSize: '6rem', margin: '2rem 0'}}>Naira & Usamah</h2>
-          <button className="btn-open" style={{marginTop: "3rem"}} data-onclick="shareInvitation()">🔗 Bagikan Undangan</button>
-          <p className="closing-credit" style={{marginTop: '5rem', fontSize: '1.1rem', opacity: 0.6}}>Digital Wedding Invitation 2026</p>
+          <img src="/assets/bg-architecture.jpg" alt="" className="closing-bg" data-parallax="0.1"/>
+          <img src="/assets/frame-baroque.png"   alt="" className="closing-frame"/>
+          <img src="/assets/flowers-left.png"    alt="" className="section-flowers" data-reveal="left"
+               style={{position:'absolute',bottom:'0',left:'-8%',width:'clamp(200px,38%,380px)',zIndex:2,opacity:0.8}}/>
+          <img src="/assets/flowers-right.png"   alt="" className="section-flowers" data-reveal="right"
+               style={{position:'absolute',bottom:'0',right:'-8%',width:'clamp(200px,35%,350px)',zIndex:2,opacity:0.8}}/>
+
+          <div style={{position:'relative',zIndex:5,textAlign:'center',maxWidth:'800px',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',paddingBottom:'4rem'}}>
+            <img src="/assets/ornament-scroll.svg" alt="" className="ornament-divider" style={{width:'180px',marginBottom:'1.5rem'}} data-reveal="fade"/>
+            <p className="closing-message" data-reveal="up" style={{fontSize:'1.1rem',lineHeight:'1.6',marginBottom:'1rem'}}>
+              Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu kepada kami.
+            </p>
+            <h2 className="closing-couple shimmer-name" data-reveal="scale" data-delay="1" style={{fontSize:'3.8rem',margin:'0.2rem 0'}}>
+              {configData.bride.nickname} &amp; {configData.groom.nickname}
+            </h2>
+            <FloralDividerSVG/>
+            
+            <p style={{fontFamily:'var(--font-serif)', fontStyle:'italic', color:'var(--text-muted)', fontSize:'1.25rem', marginTop:'1.5rem', marginBottom:'2.5rem'}} data-reveal="fade" data-delay="2">
+              Wassalamu'alaikum Warahmatullahi Wabarakatuh
+            </p>
+
+            <button className="btn-open" style={{margin:'0 auto'}} data-onclick="shareInvitation()" data-reveal="up" data-delay="3">
+              <span style={{marginRight:'8px'}}>🔗</span> Bagikan Undangan
+            </button>
+          </div>
+
+          <footer className="watermark-footer" data-reveal="fade" data-delay="4" style={{position:'absolute', bottom:'20px', left:'0', width:'100%', textAlign:'center', zIndex:10}}>
+            <p style={{fontFamily:'var(--font-sans)', fontSize:'0.85rem', color:'#C8A882', letterSpacing:'1.5px', textTransform:'uppercase', margin:'0 0 5px 0'}}>
+              Created with <span style={{color:'#8B4A58'}}>♥</span> by <strong style={{color:'#8B4A58', fontWeight:'700'}}>Ackmad Elfan Purnama</strong>
+            </p>
+            <p style={{fontFamily:'var(--font-sans)', fontSize:'0.75rem', color:'rgba(200, 168, 130, 0.7)', margin:'0'}}>
+              Digital Wedding Invitation © 2026
+            </p>
+          </footer>
         </section>
 
       </div>
