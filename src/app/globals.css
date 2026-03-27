@@ -47,7 +47,7 @@ body {
   font-family: var(--font-serif);
   background-color: var(--off-white);
   color: var(--text-dark);
-  overflow-x: hidden;
+  overflow-x: clip;
   line-height: 1.6;
 }
 body.locked { overflow: hidden !important; height: 100vh; }
@@ -118,8 +118,27 @@ section:nth-child(even) {
 }
 
 /* ==========================================
-   BG ARCHITECTURE
+   STORYTELLING PARALLAX BGS
    ========================================== */
+.story-parallax-bg {
+  position: absolute;
+  top: -20vh; left: 0;
+  width: 100vw;
+  height: 140vh; /* gives room for parallax scrolling without empty gap */
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform;
+}
+.story-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  /* Soft warm cream overlay */
+  background: linear-gradient(180deg, rgba(240, 232, 224, 0.6), rgba(240, 232, 224, 0.92));
+}
+
 .bg-architecture {
   position: absolute;
   inset: 0;
