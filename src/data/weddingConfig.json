@@ -30,35 +30,35 @@
   },
   "loveStory": [
     {
-      "icon": "🏫",
-      "date": "JULI 2019",
-      "title": "Pertemuan Pertama",
-      "text": "Kami pertama kali bertemu saat SMP karena orang tua kami saling mengenal. Walau berbeda kelas, kami sering dipertemukan hingga akhirnya jadi dekat dan terbiasa menghabiskan waktu bersama.",
-      "year": "2019",
+      "icon": "📱",
+      "date": "Awal Pertemuan",
+      "title": "Berawal dari Live yang Tak Disangka",
+      "text": "Semua berawal dari sebuah live yang dibagikan oleh teman. Ia masuk ke dalam live itu tanpa banyak bicara, hanya diam memperhatikan. Di tengah banyaknya orang yang aktif, justru sikap diam itu yang membuatnya terlihat berbeda dan menimbulkan rasa penasaran hingga akhirnya mereka mulai berkomunikasi lewat pesan.",
+      "year": "Awal",
       "dir": "left"
     },
     {
-      "icon": "🌸",
-      "date": "2020",
-      "title": "Kisah Berlanjut",
-      "text": "Kami membangun pertemanan dalam sebuah circle kecil. Penuh tawa, cerita, dan kebersamaan yang tanpa sadar membuat hubungan kami semakin berarti, meski saat itu masih kami anggap sekadar teman.",
-      "year": "2020",
+      "icon": "💬",
+      "date": "Perkenalan Singkat",
+      "title": "Dari Iseng Menjadi Nyaman",
+      "text": "Awalnya hanya sekadar mengisi waktu luang tanpa ekspektasi apa pun. Namun, dari percakapan yang singkat itu, keduanya sama-sama menyadari bahwa mereka sudah lelah dengan hubungan yang tidak serius. Sejak awal, mereka sepakat untuk membawa hubungan ini ke arah yang lebih jelas.",
+      "year": "Proses",
       "dir": "right"
     },
     {
-      "icon": "✈️",
-      "date": "2022 - 2024",
-      "title": "Terpisah & Kehilangan",
-      "text": "Setelah lulus, kami berpisah jauh. Ia ke Seoul, aku ke Jerman. Kami sempat menjaga komunikasi, namun waktu membuat kami kehilangan kabar hampir satu tahun, hingga terasa seperti dua orang asing.",
-      "year": "2024",
+      "icon": "⚡",
+      "date": "Momen Ujian",
+      "title": "Belajar Menurunkan Ego",
+      "text": "Di tengah perjalanan, mereka sempat mengalami kesalahpahaman yang berlangsung selama dua hari tanpa titik temu. Dengan jarak Jakarta dan Bandung di antara mereka, keadaan sempat terasa buntu. Hingga akhirnya, di malam hari, salah satu dari mereka memutuskan untuk menyetir sendiri menuju Bandung demi menyelesaikan semuanya secara langsung.",
+      "year": "Ujian",
       "dir": "left"
     },
     {
       "icon": "❤️",
-      "date": "2028",
-      "title": "Dipertemukan Kembali",
-      "text": "Waktu akhirnya mempertemukan kami kembali di kota dan negara yang sama. Dari pertemanan sederhana di masa sekolah, kini kami memilih untuk melangkah bersama sebagai teman hidup.",
-      "year": "2028",
+      "date": "Langkah ke Depan",
+      "title": "Memilih untuk Bertahan",
+      "text": "Dari pertemuan itu, mereka tidak hanya menyelesaikan masalah, tetapi juga belajar untuk meredakan ego masing-masing. Mereka menyadari bahwa jika ingin serius melangkah bersama, yang dibutuhkan bukan hanya perasaan, tetapi juga usaha untuk saling memahami dan bertahan.",
+      "year": "Sekarang",
       "dir": "right"
     }
   ],

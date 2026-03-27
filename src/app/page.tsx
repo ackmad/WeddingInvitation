@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import "./globals.css";
 import configData from "../data/weddingConfig.json";
 import SplashSection from "../components/SplashSection";
+import confetti from "canvas-confetti";
 
 export default function WeddingPage() {
   const [selectedAttendance, setSelectedAttendance] = useState("");
@@ -45,37 +46,16 @@ export default function WeddingPage() {
 
   /* ── CONFETTI ── */
   const launchConfetti = () => {
-    const colors = ['#8B4A58', '#C8A882', '#FAF7F4', '#8BAE8C', '#A89DC0', '#E8C5CC'];
-    const shapes = ['confetti-circle', 'confetti-diamond', ''];
-    for (let i = 0; i < 90; i++) {
-      const c = document.createElement('div');
-      c.className = `confetti-piece ${shapes[i % 3]}`;
-      c.style.cssText = `left:${Math.random() * 100}%;background:${colors[i % colors.length]};width:${Math.random() * 8 + 5}px;height:${Math.random() * 10 + 6}px;animation-delay:${Math.random() * 0.8}s;animation-duration:${Math.random() * 2 + 2.5}s;`;
-      document.body.appendChild(c);
-      setTimeout(() => c.remove(), 5000);
-    }
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#8B4A58', '#C8A882', '#FAF7F4', '#8BAE8C', '#A89DC0', '#E8C5CC']
+    });
   };
   (globalThis as any).launchConfetti = launchConfetti;
 
-  /* ── CURSOR TRAIL ── */
-  const initCursorTrail = () => {
-    const queue: HTMLElement[] = [];
-    const handler = (e: MouseEvent) => {
-      const el = document.createElement('div');
-      el.className = 'cursor-sparkle';
-      el.innerHTML = `<svg width="14" height="14" viewBox="0 0 20 20"><path d="M10 1 L11.5 8.5 L19 10 L11.5 11.5 L10 19 L8.5 11.5 L1 10 L8.5 8.5 Z" fill="#C8A882" opacity="0.8"/></svg>`;
-      el.style.cssText = `left:${e.clientX - 7}px;top:${e.clientY - 7}px;`;
-      document.body.appendChild(el);
-      queue.push(el);
-      if (queue.length > 8) {
-        const old = queue.shift();
-        old?.remove();
-      }
-      setTimeout(() => { el.remove(); const idx = queue.indexOf(el); if (idx > -1) queue.splice(idx, 1); }, 700);
-    };
-    window.addEventListener('mousemove', handler, { passive: true });
-    return () => window.removeEventListener('mousemove', handler);
-  };
+
 
   /* ── COUNT UP ── */
   const animateCountUp = (el: HTMLElement, target: number, duration = 1800) => {
@@ -107,7 +87,9 @@ export default function WeddingPage() {
   useEffect(() => {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
-    // document.body.classList.add('locked'); // Remove locking so user can scroll cinematic
+    if (!isOpened) {
+      document.body.classList.add('locked');
+    }
 
     const params = new URLSearchParams(window.location.search);
     const nama = params.get('tamu');
@@ -139,23 +121,36 @@ export default function WeddingPage() {
     /* Float ornaments in each section */
     document.querySelectorAll('section').forEach(s => addFloatOrnaments(s as HTMLElement));
 
-    /* Parallax */
-    const handleParallax = () => {
+    /* Parallax (Optimized with rAF) */
+    const parallaxEls = document.querySelectorAll('[data-parallax]');
+    const flowerEls = document.querySelectorAll('.section-flowers');
+    let ticking = false;
+
+    const updateParallax = () => {
       if (!isOpened) return;
       const scrollY = window.scrollY;
-      document.querySelectorAll('[data-parallax]').forEach(el => {
+      
+      parallaxEls.forEach(el => {
         const speed = parseFloat((el as HTMLElement).dataset.parallax || '0.15');
-        (el as HTMLElement).style.transform = `translateY(${scrollY * speed}px)`;
+        (el as HTMLElement).style.transform = `translate3d(0, ${scrollY * speed}px, 0)`;
       });
-      document.querySelectorAll('.section-flowers').forEach((el, i) => {
+
+      flowerEls.forEach((el, i) => {
         const drift = Math.sin(scrollY * 0.002 + i) * 15;
-        // Gunakan getBoundingClientRect().top agar parallax relative terhadap section-nya, tidak offset berlebihan di bawah
         const parentRect = el.parentElement?.getBoundingClientRect();
         const yOffset = parentRect ? parentRect.top * 0.15 : scrollY * -0.15;
         (el as HTMLElement).style.transform = `translate3d(${drift}px, ${yOffset}px, 0)`;
       });
+      ticking = false;
     };
-    window.addEventListener('scroll', handleParallax, { passive: true });
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
 
     /* Float data-float elements */
     document.querySelectorAll('[data-float]').forEach((el, i) => {
@@ -228,18 +223,15 @@ export default function WeddingPage() {
     const closing = document.getElementById('closing');
     if (closing) closingObs.observe(closing);
 
-    /* Cursor trail (desktop only) */
-    let cleanupCursor: (() => void) | undefined;
-    if (window.innerWidth > 768) cleanupCursor = initCursorTrail();
+
 
     return () => {
-      window.removeEventListener('scroll', handleParallax);
+      window.removeEventListener('scroll', onScroll);
       clearInterval(clockInt);
       revealObs.disconnect();
       secObs.disconnect();
       countObs.disconnect();
       closingObs.disconnect();
-      cleanupCursor?.();
       document.getElementById('petal-container')?.remove();
     };
   }, [isOpened]);

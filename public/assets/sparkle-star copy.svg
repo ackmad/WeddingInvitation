@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40">
-  <!-- 4-point sparkle shape — skala bebas via CSS width/height -->
-  <!-- Outer star -->
-  <path d="M20,2 L22.5,17.5 L38,20 L22.5,22.5 L20,38 L17.5,22.5 L2,20 L17.5,17.5 Z" fill="#C8A882" opacity="0.85"/>
-  <!-- Inner bright core -->
-  <path d="M20,10 L21.2,18.8 L30,20 L21.2,21.2 L20,30 L18.8,21.2 L10,20 L18.8,18.8 Z" fill="#F0E0C0" opacity="0.95"/>
-  <!-- Center dot -->
-  <circle cx="20" cy="20" r="2.5" fill="#FFF8E8" opacity="1"/>
-</svg>

@@ -1,166 +1,97 @@
 .container {
-  position: relative;
-  width: 100%;
-  height: 600vh; /* Extra height for more scroll depth */
-  background: #FAF7F4;
-}
-
-.stickyWrapper {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  inset: 0;
   width: 100%;
   height: 100vh;
-  overflow: hidden;
+  height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: #FAF7F4;
   z-index: 1000;
+  overflow: hidden;
+  opacity: 0; 
+  transition: opacity 1.5s ease-out, transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translateY(2%);
 }
 
-/* Base properties for animated layers */
-.layer {
-  position: absolute;
+.container.mounted {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.container.closing {
+  opacity: 0;
+  transform: translateY(-10%);
   pointer-events: none;
-  object-fit: contain;
-  /* Dihapus will-change: transform, opacity; karena membuat terlalu banyak composite layer di RAM yang memicu lag */
 }
 
-/* Layer 0: Static Background */
 .bgStatic {
   position: absolute;
   inset: 0;
+  background-image: url('/assets/opening/bg-watercolor-texture.png');
   background-size: cover;
   background-position: center;
+  opacity: 0.7;
   z-index: 1;
 }
 
-/* Layer 1: Manor (Initially hidden) */
-.manorLayer {
+.flowerTopLeft {
   position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0;
+  top: -15%;
+  left: -15%;
+  width: 50%;
+  height: 50%;
+  background-image: url('/assets/opening/flowers-foreground-left.png');
+  background-size: contain;
+  background-repeat: no-repeat;
   z-index: 2;
-  will-change: opacity;
+  opacity: 0.9;
+  animation: swayLeft 8s ease-in-out infinite alternate;
+  transform-origin: top left;
 }
 
-/* Parallax Trees */
-.treeGreenL {
-  left: 5%;
-  bottom: 10%;
-  width: 30%;
-  z-index: 5;
-}
-
-.treeGreenR {
-  right: 5%;
-  bottom: 10%;
-  width: 30%;
-  z-index: 5;
-  transform: scaleX(-1);
-}
-
-.treePinkL {
-  left: 15%;
-  bottom: 5%;
-  width: 25%;
-  z-index: 6;
-}
-
-.treePinkR {
-  right: 15%;
-  bottom: 5%;
-  width: 25%;
-  z-index: 6;
-}
-
-/* Layer 3: Archway Zoom */
-.archwayLayer {
+.flowerBottomRight {
   position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end; /* Align bottom */
+  bottom: -15%;
+  right: -15%;
+  width: 50%;
+  height: 50%;
+  background-image: url('/assets/opening/flowers-foreground-right.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  z-index: 2;
+  opacity: 0.9;
+  animation: swayRight 8s ease-in-out infinite alternate;
+  transform-origin: bottom right;
+}
+
+@keyframes swayLeft {
+  0% { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(4deg) scale(1.03); }
+}
+
+@keyframes swayRight {
+  0% { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(-4deg) scale(1.03); }
+}
+
+.content {
+  position: relative;
   z-index: 10;
-}
-
-.archwayImg {
-  width: 100%;
-  height: 95%; /* leave slight room at top for parallax trees */
-  object-fit: contain;
-  object-position: bottom center;
-}
-
-/* Layer 4: Fog Transition */
-/* Penggunaan radial-gradient di layar penuh sangat membebani GPU saat di-animasikan. Diganti dengan flat opacity putih/krem pekat */
-.fogOverlay {
-  position: absolute;
-  inset: 0;
-  background-color: rgba(250, 247, 244, 0.85); 
-  opacity: 0;
-  z-index: 15;
-  pointer-events: none;
-}
-
-/* Layer 5: Main Castle */
-.castleImg {
-  position: absolute;
-  bottom: 20%;
-  width: min(80%, 400px);
-  opacity: 0;
-  z-index: 20;
-  will-change: transform, opacity;
-}
-
-/* Layer 6: Big Ben Towers */
-.towerL {
-  left: 10%;
-  bottom: 15%;
-  width: 120px;
-  z-index: 18;
-  opacity: 0;
-}
-
-.towerR {
-  right: 10%;
-  bottom: 15%;
-  width: 120px;
-  z-index: 18;
-  opacity: 0;
-  transform: scaleX(-1);
-}
-
-/* Layer 7: Foreground Flowers */
-.flowerL {
-  left: -5%;
-  bottom: -5%;
-  width: 40%;
-  z-index: 30;
-  opacity: 0;
-}
-
-.flowerR {
-  right: -5%;
-  bottom: -5%;
-  width: 40%;
-  z-index: 30;
-  opacity: 0;
-}
-
-/* Layer 8: Typography Reveal */
-.typographyLayer {
-  position: absolute;
-  inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  z-index: 40;
-  color: #8B4A58;
   text-align: center;
   padding: 2rem;
-  opacity: 0; /* Hidden on mount, revealed by GSAP */
+  color: #8B4A58;
+  animation: fadeInUp 1.5s ease-out 0.3s both;
+}
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .initialsContainer {
@@ -168,115 +99,110 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.initialSvg {
-  width: 80px;
-  height: 80px;
-}
-
-.initialSvg path {
-  stroke-dasharray: 350;
-  stroke-dashoffset: 350;
+.initial {
+  font-family: 'Great Vibes', cursive;
+  font-size: clamp(3rem, 10vw, 5rem);
+  color: #C8A882;
+  line-height: 1;
+  text-shadow: 2px 2px 8px rgba(200, 168, 130, 0.3);
 }
 
 .ampersand {
   font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  color: #C8A882;
+  font-size: clamp(2rem, 7vw, 3rem);
+  color: #8B4A58;
   font-style: italic;
+  opacity: 0.8;
+}
+
+.weddingOf {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #8B7078;
+  margin-bottom: 0.5rem;
 }
 
 .fullNames {
   font-family: 'Great Vibes', cursive;
-  font-size: clamp(2rem, 8vw, 4rem);
-  margin-top: 1rem;
+  font-size: clamp(3.5rem, 12vw, 6.5rem);
   color: #8B4A58;
-  letter-spacing: 0.5em;
-  white-space: nowrap;
-  clip-path: inset(100% 0 0 0);
-  will-change: clip-path, letter-spacing;
+  line-height: 1.2;
+  margin: 0;
+  text-shadow: 2px 4px 12px rgba(139, 74, 88, 0.15);
 }
 
 .openBtnContainer {
-  margin-top: 3rem;
-  opacity: 0;
+  margin-top: 3.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  pointer-events: auto; /* Enable interaction */
 }
 
 .guestGreet {
   font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
-  text-transform: uppercase;
+  font-size: 0.85rem;
   letter-spacing: 2px;
-  margin-bottom: 1.5rem;
+  text-transform: uppercase;
   color: #C8A882;
+  margin-bottom: 1.5rem;
 }
 
 .guestGreet span {
-  font-weight: 700;
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
   color: #8B4A58;
+  margin-top: 0.3rem;
+  font-style: italic;
 }
 
 .openBtn {
   background: white;
-  border: 1px solid #C8A882;
+  border: 1px solid rgba(200, 168, 130, 0.8);
   color: #8B4A58;
-  padding: 1rem 2.5rem;
+  padding: 14px 42px;
+  border-radius: 50px;
   font-family: 'Inter', sans-serif;
-  font-size: 0.8rem;
-  letter-spacing: 2px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.4s ease;
-  box-shadow: 0 10px 30px rgba(200, 168, 130, 0.15);
+  box-shadow: 0 10px 25px rgba(139, 74, 88, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .openBtn:hover {
   background: #C8A882;
   color: white;
   transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(200, 168, 130, 0.25);
+  box-shadow: 0 15px 35px rgba(200, 168, 130, 0.35);
+  border-color: #C8A882;
 }
 
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
-  .container {
-    height: auto;
+  .flowerTopLeft {
+    width: 65%;
+    height: 65%;
+    top: -5%;
+    left: -15%;
   }
-  .stickyWrapper {
-    position: relative;
-    height: auto;
-    min-height: 100vh;
-  }
-  /* Simple fade-in layout for mobile */
-  .archwayLayer, .manorLayer, .fogOverlay, .treeGreenL, .treeGreenR, .treePinkL, .treePinkR {
-    display: none;
-  }
-  .bgStatic {
-    background-attachment: scroll;
-  }
-  .castleImg, .towerL, .towerR, .flowerL, .flowerR {
-    opacity: 1 !important;
-    transform: none !important;
-    position: relative;
-    margin: 20px auto;
-    width: 60%;
-  }
-  .typographyLayer {
-    position: relative;
-    padding-bottom: 100px;
-    opacity: 1 !important;
-  }
-  .fullNames {
-    clip-path: none !important;
-    letter-spacing: 0.1em !important;
-  }
-  .openBtnContainer {
-    opacity: 1 !important;
+  .flowerBottomRight {
+    width: 65%;
+    height: 65%;
+    bottom: -5%;
+    right: -15%;
   }
 }
