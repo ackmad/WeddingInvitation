@@ -804,8 +804,8 @@ export default function WeddingPage() {
           </div>
 
           <footer className="watermark-footer" data-reveal="fade" style={{ position: 'absolute', bottom: '20px', left: '0', width: '100%', textAlign: 'center', zIndex: 10 }}>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#FFFFFF', letterSpacing: '1.5px', textTransform: 'uppercase', margin: '0 0 5px 0', opacity: 0.6 }}>
-              Created with ♥ by <strong style={{ fontWeight: '700' }}>Ackmad Elfan Purnama</strong>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#FFFFFF', letterSpacing: '1.5px', textTransform: 'uppercase', margin: '0 0 5px 0', opacity: 0.8 }}>
+              Created with ♥ by <a href="https://ackmad.vercel.app" target="_blank" rel="noopener noreferrer" style={{ fontWeight: '700', color: '#FFF', textDecoration: 'none', borderBottom: '1px dotted rgba(255,255,255,0.5)', paddingBottom: '2px', transition: 'all 0.3s' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--gold)'} onMouseLeave={(e) => e.currentTarget.style.color = '#FFF'}>Ackmad Elfan Purnama</a>
             </p>
             <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.4)', margin: '0' }}>
               Digital Wedding Invitation © 2026
