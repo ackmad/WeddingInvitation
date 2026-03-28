@@ -399,41 +399,31 @@ export default function WeddingPage() {
             Assalamu'alaikum Warahmatullahi Wabarakatuh
           </p>
 
-          <div className="profil-grid">
-            {/* BRIDE */}
-            <div className="profil-card" data-reveal="left">
-              <div className="profil-photo-wrap">
-                {/* Flower crown SVG */}
-                <svg className="flower-crown" viewBox="0 0 80 40" aria-hidden="true">
-                  <path d="M40 35 Q20 20 10 10 Q20 5 30 15 Q35 2 40 8 Q45 2 50 15 Q60 5 70 10 Q60 20 40 35Z" fill="#E8C5CC" opacity="0.8" />
-                  <path d="M40 35 Q20 20 10 10 Q20 5 30 15 Q35 2 40 8 Q45 2 50 15 Q60 5 70 10 Q60 20 40 35Z" fill="none" stroke="#C8A882" strokeWidth="0.8" opacity="0.6" />
-                </svg>
-                <div className="profil-photo-inner">
-                  <img src={configData.bride.photoUrl} alt={configData.bride.nickname} />
-                </div>
+          <div className="profil-joint-container" data-reveal="fade">
+            <div className="profil-photo-joint-wrap">
+              <svg className="flower-crown-large" viewBox="0 0 100 50" aria-hidden="true">
+                <path d="M50 45 Q25 25 10 15 Q25 8 38 20 Q44 2 50 10 Q56 2 62 20 Q75 8 90 15 Q75 25 50 45Z" fill="#E8C5CC" opacity="0.8" />
+                <path d="M50 45 Q25 25 10 15 Q25 8 38 20 Q44 2 50 10 Q56 2 62 20 Q75 8 90 15 Q75 25 50 45Z" fill="none" stroke="#C8A882" strokeWidth="1" opacity="0.6" />
+              </svg>
+              <div className="profil-photo-inner joint-frame">
+                <img src="/assets/photo/photo1-trans.png" alt="Mempelai" />
               </div>
-              <h3 className="profil-name">{configData.bride.fullName}</h3>
-              <p className="profil-parent" style={{ whiteSpace: 'pre-line' }}>{configData.bride.parents}</p>
-              <a href={configData.bride.instagramLink} className="profil-ig">📸 {configData.bride.instagram}</a>
             </div>
 
-            {/* AMPERSAND */}
-            <div className="profil-divider" data-reveal="scale" data-delay="2">&amp;</div>
-
-            {/* GROOM */}
-            <div className="profil-card" data-reveal="right">
-              <div className="profil-photo-wrap">
-                <svg className="flower-crown" viewBox="0 0 80 40" aria-hidden="true">
-                  <path d="M40 35 Q20 20 10 10 Q20 5 30 15 Q35 2 40 8 Q45 2 50 15 Q60 5 70 10 Q60 20 40 35Z" fill="#E8C5CC" opacity="0.8" />
-                  <path d="M40 35 Q20 20 10 10 Q20 5 30 15 Q35 2 40 8 Q45 2 50 15 Q60 5 70 10 Q60 20 40 35Z" fill="none" stroke="#C8A882" strokeWidth="0.8" opacity="0.6" />
-                </svg>
-                <div className="profil-photo-inner">
-                  <img src={configData.groom.photoUrl} alt={configData.groom.nickname} />
-                </div>
+            <div className="profil-names-joint">
+              <div className="profil-card-mini" data-reveal="left">
+                <h3 className="profil-name-mini">{configData.bride.fullName}</h3>
+                <p className="profil-parent-mini" style={{ whiteSpace: 'pre-line' }}>{configData.bride.parents}</p>
+                <a href={configData.bride.instagramLink} className="profil-ig-mini">📸 {configData.bride.instagram}</a>
               </div>
-              <h3 className="profil-name">{configData.groom.fullName}</h3>
-              <p className="profil-parent" style={{ whiteSpace: 'pre-line' }}>{configData.groom.parents}</p>
-              <a href={configData.groom.instagramLink} className="profil-ig">📸 {configData.groom.instagram}</a>
+
+              <div className="profil-divider-mini" data-reveal="scale">&amp;</div>
+
+              <div className="profil-card-mini" data-reveal="right">
+                <h3 className="profil-name-mini">{configData.groom.fullName}</h3>
+                <p className="profil-parent-mini" style={{ whiteSpace: 'pre-line' }}>{configData.groom.parents}</p>
+                <a href={configData.groom.instagramLink} className="profil-ig-mini">📸 {configData.groom.instagram}</a>
+              </div>
             </div>
           </div>
           <img src="/assets/ornament-scroll.svg" alt="" className="ornament-divider" style={{ width: '220px', marginTop: '3.5rem' }} data-reveal="fade" />
@@ -653,7 +643,7 @@ export default function WeddingPage() {
           </div>
 
           <div className="wishes-list" data-reveal="up">
-            {configData.initialWishes.map((w, i) => (
+            {(configData.initialWishes as { name: string, text: string }[]).map((w, i) => (
               <div key={i} className="wish-bubble" data-reveal="up" data-delay={i % 3 as number}>
                 <p className="wish-bubble-name">{w.name}</p>
                 <p className="wish-bubble-text">"{w.text}"</p>

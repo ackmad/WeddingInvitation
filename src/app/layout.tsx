@@ -1,16 +1,22 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Quicksand } from "next/font/google";
+import { Cormorant_Garamond, Dancing_Script, Montserrat } from "next/font/google";
 import "./globals.css";
 import configData from "../data/weddingConfig.json";
 
+const cursiveFont = Dancing_Script({
+  variable: "--font-script-family",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+  variable: "--font-serif-family",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const quicksand = Quicksand({
-  variable: "--font-quicksand",
+const montserrat = Montserrat({
+  variable: "--font-sans-family",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
@@ -28,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className={`${cormorant.variable} ${quicksand.variable} antialiased`}>
+      <body className={`${cursiveFont.variable} ${cormorant.variable} ${montserrat.variable} antialiased`}>
         {children}
       </body>
     </html>
