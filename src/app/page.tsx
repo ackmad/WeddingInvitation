@@ -155,9 +155,16 @@ export default function WeddingPage() {
       setGuestName(decodeURIComponent(nama));
     }
 
-    /* Scroll Reveal */
+    /* Scroll Reveal - Repeatable animate in and out (Fade In & Fade Out) */
     const revealObs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); revealObs.unobserve(e.target); } });
+      entries.forEach(e => { 
+        if (e.isIntersecting) { 
+          e.target.classList.add('revealed'); 
+        } else {
+          // Removes class when element scrolls out of view, triggering fade-out animation
+          e.target.classList.remove('revealed');
+        }
+      });
     }, { threshold: 0.1 });
     document.querySelectorAll('[data-reveal]').forEach(el => revealObs.observe(el));
 
