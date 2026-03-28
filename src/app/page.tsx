@@ -135,9 +135,9 @@ export default function WeddingPage() {
   };
 
   /* ── PARALLAX COMPONENT ── */
-  const SectionBackground = ({ src, factor = 0.3 }: { src: string, factor?: number }) => (
+  const SectionBackground = ({ src, factor = 0.3, style }: { src: string, factor?: number, style?: React.CSSProperties }) => (
     <div className="section-bg-wrapper">
-      <img src={src} alt="" className="section-bg-image js-parallax" data-factor={factor} />
+      <img src={src} alt="" className="section-bg-image js-parallax" data-factor={factor} style={style} />
       <div className="section-overlay"></div>
     </div>
   );
@@ -270,7 +270,14 @@ export default function WeddingPage() {
     document.body.classList.remove('locked');
     document.getElementById('splash')?.classList.add('hide');
     const audio = document.getElementById('bg-music') as HTMLAudioElement;
-    if (audio) { audio.play().catch(() => { }); document.getElementById('music-btn')?.classList.add('playing'); }
+    if (audio) { 
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          document.getElementById('music-btn')?.classList.add('playing');
+        }).catch(() => { });
+      }
+    }
     setTimeout(() => {
       document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' });
       const splashEl = document.getElementById('splash');
@@ -348,6 +355,21 @@ export default function WeddingPage() {
         else if (action.includes('shareInvitation()')) shareInvitation();
         else if (action.includes('openLightbox')) { const m = action.match(/'([^']+)'/); if (m?.[1]) openLightbox(m[1]); }
         else if (action.includes('copyRekening')) { const m = action.match(/'([^']+)'/); if (m?.[1]) copyRekening(m[1]); }
+        else if (action.includes('toggleMusic()')) {
+          const audio = document.getElementById('bg-music') as HTMLAudioElement;
+          const btn = document.getElementById('music-btn');
+          if (audio.paused) {
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+              playPromise.then(() => {
+                btn?.classList.add('playing');
+              }).catch(() => { });
+            }
+          } else {
+            audio.pause();
+            btn?.classList.remove('playing');
+          }
+        }
         else if (action.includes('scrollToSection')) { const m = action.match(/'([^']+)'/); if (m?.[1]) document.getElementById(m[1])?.scrollIntoView({ behavior: 'smooth' }); }
         else if (action.includes('selectAttendance')) {
           const m = action.match(/'([^']+)'/);
@@ -359,9 +381,9 @@ export default function WeddingPage() {
         }
       }}>
 
-        <button id="music-btn" aria-label="Play/Pause musik" title="Musik" style={{ opacity: isOpened ? 1 : 0, transition: 'opacity 1s ease 0.8s', pointerEvents: isOpened ? 'auto' : 'none' }}>♪</button>
+        <button id="music-btn" data-onclick="toggleMusic()" aria-label="Play/Pause musik" title="Musik" style={{ opacity: isOpened ? 1 : 0, transition: 'opacity 1s ease 0.8s', pointerEvents: isOpened ? 'auto' : 'none' }}>♪</button>
         <audio id="bg-music" loop preload="none">
-          <source src="/music/music-background.mp3" type="audio/mpeg" />
+          <source src="/music/music.mp3" type="audio/mpeg" />
         </audio>
 
         <nav id="dot-nav" aria-label="Section navigation" style={{ opacity: isOpened ? 1 : 0, pointerEvents: isOpened ? 'auto' : 'none', transition: 'opacity 1s ease 0.8s' }}>
@@ -419,7 +441,7 @@ export default function WeddingPage() {
 
         {/* ══════════ PROFIL ══════════ */}
         <section id="profil" className="section-with-bg has-sparkles">
-          <SectionBackground src="/assets/photo/photo2-trans.png" factor={0.25} />
+          <SectionBackground src="/assets/photo/photo2-trans.png" factor={0.25} style={{ objectPosition: '80% 20%' }} />
           
           <div style={{ position: 'relative', zIndex: 5, width: '100%' }}>
             <h2 className="section-title text-white text-shadow-premium" data-reveal="up">Mempelai Berbahagia</h2>
@@ -429,6 +451,10 @@ export default function WeddingPage() {
 
             <div className="profil-joint-container" data-reveal="fade">
               <div className="profil-photo-joint-wrap">
+                <div className="cute-ornament ornament-star" style={{ top: '-10%', left: '0' }}>✦</div>
+                <div className="cute-ornament ornament-sparkle" style={{ top: '10%', right: '5%' }}>✨</div>
+                <div className="cute-ornament ornament-star" style={{ bottom: '15%', right: '-5%', fontSize: '1.5rem' }}>✦</div>
+                <div className="cute-ornament ornament-sparkle" style={{ bottom: '5%', left: '10%' }}>✨</div>
                 <div className="profil-photo-inner joint-frame">
                   <img src="/assets/photo/photo1-trans.png" alt="Mempelai" />
                 </div>
