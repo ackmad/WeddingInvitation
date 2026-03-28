@@ -1435,9 +1435,9 @@ section:nth-child(even) {
 }
 
 /* Remove aspect ratios that were for masonry */
-.galeri-item img {
-  aspect-ratio: 1 / 1.2;
-  /* Uniform aspect ratio for better grid look */
+.galeri-item {
+  aspect-ratio: 5 / 6;
+  /* Uniform consistent aspect ratio */
 }
 
 .galeri-item {
@@ -1475,38 +1475,26 @@ section:nth-child(even) {
   height: 100%;
   display: block;
   object-fit: cover;
-  /* Fill the frame */
-  transition: transform 0.45s cubic-bezier(0.2, 0, 0.2, 1), filter 0.35s ease;
+  /* Zoom in to remove transparent padding from cutouts */
+  transform: scale(1.6);
+  transition: transform 0.6s cubic-bezier(0.2, 0, 0.2, 1), filter 0.35s ease;
   z-index: 1;
 }
 
-/* Adjust position for transparent cutouts that are off-center */
+/* Specifically adjust the middle-top image: show groom (left) and heads (top) */
 .galeri-item:nth-child(2) img {
-  object-position: 80% center;
-  /* Shift to see groom on the left */
-}
-
-.galeri-item:nth-child(4) img {
-  object-position: 80% center;
-  /* Shift to see groom on the right */
+  object-position: 25% 0%; /* Focus on top to move photo down and reveal heads */
+  transform: scale(1.4);   /* Slightly less zoom to fit everything in */
 }
 
 .galeri-item:hover img {
-  transform: scale(1.05);
+  transform: scale(1.8);
   filter: brightness(1.05);
 }
 
-/* Vary heights for masonry effect */
-.galeri-item:nth-child(3n+1) img {
-  aspect-ratio: 3/4;
-}
-
-.galeri-item:nth-child(3n+2) img {
-  aspect-ratio: 1;
-}
-
-.galeri-item:nth-child(3n) img {
-  aspect-ratio: 4/5;
+/* Maintain consistent ratio for all items */
+.galeri-item:nth-child(n) {
+  aspect-ratio: 5 / 6;
 }
 
 /* Lightbox */
@@ -2555,12 +2543,12 @@ textarea.form-input {
 }
 
 .guestbook-panel {
-  background: rgba(255, 255, 255, 0.32) !important;
+  background: rgba(0, 0, 0, 0.72) !important;
   border-radius: 16px !important;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
-  backdrop-filter: blur(8.1px) !important;
-  -webkit-backdrop-filter: blur(8.1px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   padding: 3rem 2.5rem;
   display: flex;
   flex-direction: column;
@@ -2720,7 +2708,7 @@ textarea.form-input {
 
 /* Comment Cards */
 .comment-card {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   padding: 1.5rem;

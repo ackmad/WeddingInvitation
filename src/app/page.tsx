@@ -780,7 +780,7 @@ export default function WeddingPage() {
               Created with ♥ by <a href="https://ackmad.vercel.app" target="_blank" rel="noopener noreferrer" style={{ fontWeight: '700', color: '#FFF', textDecoration: 'none', borderBottom: '1px dotted rgba(255,255,255,0.5)', paddingBottom: '2px', transition: 'all 0.3s' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--gold)'} onMouseLeave={(e) => e.currentTarget.style.color = '#FFF'}>Ackmad Elfan Purnama</a>
             </p>
             <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.4)', margin: '0' }}>
-              Digital Wedding Invitation © 2026
+              Digital Wedding Invitation © 2026 • v1.2.4
             </p>
           </footer>
         </section>
