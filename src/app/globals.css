@@ -1714,24 +1714,61 @@ textarea.form-input {
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
-  width: 48px;
-  height: 48px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
-  background: #FFFFFF !important;
-  color: #0A0A0A !important;
-  border: 1px solid rgba(0,0,0,0.1) !important;
+  /* High-end vinyl grooves */
+  background: 
+    radial-gradient(circle at center, transparent 33%, rgba(255, 255, 255, 0.05) 34%, transparent 35%),
+    repeating-radial-gradient(
+      rgba(0,0,0,0) 0,
+      rgba(255,255,255,0.02) 1px,
+      rgba(0,0,0,0) 2px,
+      rgba(0,0,0,0) 4px
+    ),
+    #181818 !important;
+  color: #111 !important; /* Note color on top of gold label */
+  border: 4px solid #282828 !important;
   cursor: pointer;
-  z-index: 90;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
-  box-shadow: 0 6px 20px rgba(107,48,64,0.38);
-  transition: transform 0.2s;
+  font-weight: 900;
+  box-shadow: 
+    0 10px 30px rgba(0,0,0,0.6),
+    inset 0 0 15px rgba(255,255,255,0.05);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 1s;
 }
-#music-btn.playing { animation: rotateNote 4s linear infinite; }
-#music-btn:hover   { transform: scale(1.1); }
-@keyframes rotateNote {
+
+/* Vinyl Center Label */
+#music-btn::before {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #D4AF37, #F2D388, #D4AF37);
+  border-radius: 50%;
+  z-index: -1;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.4);
+}
+
+/* Spindle hole */
+#music-btn::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: #181818;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+#music-btn.playing { animation: rotateVinyl 4s linear infinite; }
+#music-btn:hover { transform: scale(1.15) rotate(5deg) !important; }
+
+@keyframes rotateVinyl {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
