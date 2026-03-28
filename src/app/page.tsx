@@ -451,10 +451,27 @@ export default function WeddingPage() {
 
             <div className="profil-joint-container" data-reveal="fade">
               <div className="profil-photo-joint-wrap">
-                <div className="cute-ornament ornament-star" style={{ top: '-10%', left: '0' }}>✦</div>
-                <div className="cute-ornament ornament-sparkle" style={{ top: '10%', right: '5%' }}>✨</div>
-                <div className="cute-ornament ornament-star" style={{ bottom: '15%', right: '-5%', fontSize: '1.5rem' }}>✦</div>
-                <div className="cute-ornament ornament-sparkle" style={{ bottom: '5%', left: '10%' }}>✨</div>
+                {/* Vintage Rose Top Left */}
+                <svg className="cute-vector vector-tl" viewBox="0 0 100 100" style={{ top: '3%', left: '-12%', width: '65px' }}>
+                  <path d="M50 0 C20 0 0 20 0 50 C0 80 20 100 50 100 C80 100 100 80 100 50 C100 20 80 0 50 0 Z" fill="#E8C5CC" opacity="0.6" />
+                  <path d="M50 15 C30 15 15 30 15 50 C15 70 30 85 50 85 C70 85 85 70 85 50 C85 30 70 15 50 15 Z" fill="#8B4A58" opacity="0.4" />
+                </svg>
+                
+                {/* Gold Sparkle Top Right */}
+                <svg className="cute-vector vector-tr" viewBox="0 0 100 100" style={{ top: '-8%', right: '-5%', width: '45px' }}>
+                  <path d="M50 0 Q50 50 100 50 Q50 50 50 100 Q50 50 0 50 Q50 50 50 0 Z" fill="#C8A882" />
+                </svg>
+
+                {/* Romantic Heart Bottom Left */}
+                <svg className="cute-vector vector-bl" viewBox="0 0 100 100" style={{ bottom: '10%', left: '-10%', width: '50px' }}>
+                  <path d="M50 30 C50 10 20 10 20 30 C20 50 50 80 50 80 C50 80 80 50 80 30 C80 10 50 10 50 30 Z" fill="#C07A8A" />
+                </svg>
+
+                {/* Soft Sparkle Bottom Right */}
+                <svg className="cute-vector vector-br" viewBox="0 0 100 100" style={{ bottom: '-3%', right: '8%', width: '40px' }}>
+                  <path d="M50 0 Q50 50 100 50 Q50 50 50 100 Q50 50 0 50 Q50 50 50 0 Z" fill="#E8D5B0" />
+                </svg>
+
                 <div className="profil-photo-inner joint-frame">
                   <img src="/assets/photo/photo1-trans.png" alt="Mempelai" />
                 </div>
