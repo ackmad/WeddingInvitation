@@ -1,28 +1,28 @@
 {
   "bride": {
-    "nickname": "Elfan",
-    "fullName": "Ackmad Elfan Purnama",
-    "parents": "Putri dari Bapak Irfan Purnama\n& Ibu Elvina Rahmawati",
-    "instagram": "@naira_ashalina",
-    "instagramLink": "#",
+    "nickname": "Rini",
+    "fullName": "Rini Astria",
+    "parents": "Putri dari Ibu Rosita Mangunsong\n& Bapak Dedi Supriatna",
+    "instagram": "@Hatinya virgo",
+    "instagramLink": "https://www.instagram.com/hatinyavirgo/",
     "photoUrl": "https://images.unsplash.com/photo-1524638431109-93d95c2f11bc?auto=format&fit=crop&w=400&q=80"
   },
   "groom": {
-    "nickname": "GoYounjung",
-    "fullName": "Go Youn-jung",
-    "parents": "Putra dari Bapak ...\n& Ibu ...",
-    "instagram": "@usamah.fatih",
-    "instagramLink": "#",
+    "nickname": "Zelan",
+    "fullName": "Ahmad Zelan Syaoni",
+    "parents": "Putra dari Ibu Fany Nurbaya\n& Papah Dani Yuliansyah",
+    "tiktok": "@🇲🇨ZEMR🇯🇵",
+    "tiktokLink": "https://www.tiktok.com/@zemr1",
     "photoUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
   },
   "weddingInfo": {
-    "date": "2026-03-29T08:00:00",
-    "dateFormatted": "29 · 03 · 2026",
-    "calendarGoogleLink": "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Pernikahan+Naira+%26+Usamah&dates=20260329T010000Z/20260329T070000Z",
-    "calendarIcsDownload": "data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ASUMMARY:Pernikahan+Naira+%26+Usamah%0ADTSTART:20260329T080000%0ADTEND:20260329T140000%0AEND:VEVENT%0AEND:VCALENDAR"
+    "date": "2026-04-26T08:30:00",
+    "dateFormatted": "26 · 04 · 2026",
+    "calendarGoogleLink": "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Pernikahan+Rini+%26+Zelan&dates=20260426T013000Z/20260426T070000Z",
+    "calendarIcsDownload": "data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ASUMMARY:Pernikahan+Rini+%26+Zelan%0ADTSTART:20260426T083000%0ADTEND:20260426T140000%0AEND:VEVENT%0AEND:VCALENDAR"
   },
   "contact": {
-    "waNumber": "6281234567890"
+    "waNumber": "628"
   },
   "hero": {
     "quote": "\"Dan di antara tanda-tanda-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya.\"",
@@ -66,72 +66,44 @@
     {
       "type": "Akad Nikah",
       "iconStyle": "akad",
-      "dateStr": "Minggu, 29 Maret 2026",
-      "timeStr": "08:00 – 10:00 WIB",
-      "venueName": "Masjid Raya Al-Barokah",
-      "venueAddress": "Jl. Kerajaan Indah No. 12, Jakarta",
-      "mapsLink": "https://maps.app.goo.gl/",
+      "dateStr": "Minggu, 26 April 2026",
+      "timeStr": "08:30 WIB",
+      "venueName": "D`Royale Tapos Resort Bogor",
+      "venueAddress": "Jl. Veteran III, Cileungsi, Kec. Ciawi, Kabupaten Bogor, Jawa Barat 16720",
+      "mapsLink": "https://maps.app.goo.gl/Q1AjZ9xzfmcmwP2QA",
       "dir": "left"
     },
     {
       "type": "Resepsi",
       "iconStyle": "resepsi",
-      "dateStr": "Minggu, 29 Maret 2026",
-      "timeStr": "11:00 – 14:00 WIB",
-      "venueName": "Grand Baroque Ballroom",
-      "venueAddress": "Hotel Royal Palace, Jakarta",
-      "mapsLink": "https://maps.app.goo.gl/",
+      "dateStr": "Minggu, 26 April 2026",
+      "timeStr": "10:00 WIB – Selesai",
+      "venueName": "D`Royale Tapos Resort Bogor",
+      "venueAddress": "Jl. Veteran III, Cileungsi, Kec. Ciawi, Kabupaten Bogor, Jawa Barat 16720",
+      "mapsLink": "https://maps.app.goo.gl/Q1AjZ9xzfmcmwP2QA",
       "dir": "right"
     }
   ],
   "gallery": [
-    "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=500&q=80",
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=500&q=80",
-    "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=500&q=80",
-    "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=500&q=80",
-    "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=500&q=80",
-    "https://images.unsplash.com/photo-1465495910483-0d6745778274?auto=format&fit=crop&w=500&q=80",
-    "https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=500&q=80",
-    "https://images.unsplash.com/photo-1522673607200-164883eecd4c?auto=format&fit=crop&w=500&q=80",
-    "https://images.unsplash.com/photo-1529634597503-139d3726fed5?auto=format&fit=crop&w=500&q=80"
+    "/assets/photo/photo1-trans.png",
+    "/assets/photo/photo2-trans.png",
+    "/assets/photo/photo3-trans.png",
+    "/assets/photo/photo4-trans.png",
+    "/assets/photo/photo5-trans.png"
   ],
   "bankAccounts": [
     {
       "bank": "BCA",
-      "number": "1234567890",
-      "numberFormatted": "123 456 7890",
-      "owner": "a.n Naira Ashalina",
-      "dir": "left"
-    },
-    {
-      "bank": "Mandiri",
-      "number": "0987654321",
-      "numberFormatted": "098 765 4321",
-      "owner": "a.n Usamah Al-Fatih",
-      "dir": "right"
+      "number": "7360355459",
+      "numberFormatted": "736 035 5459",
+      "owner": "a.n Rini Astria",
+      "dir": "center"
     }
   ],
   "guestBookStats": {
-    "invited": 247,
-    "attending": 89,
-    "wishes": 56
+    "invited": 350,
+    "attending": 0,
+    "wishes": 0
   },
-  "initialWishes": [
-    {
-      "name": "Rizky Pratama",
-      "text": "Selamat menempuh hidup baru Usamah & Naira! Semoga SAMAWA ya. Barakallah 💕"
-    },
-    {
-      "name": "Sarah Amalia",
-      "text": "Barakallah untuk kalian berdua. Akhirnya sah juga! Semoga langgeng selalu 🌸"
-    },
-    {
-      "name": "Budi Santoso",
-      "text": "Doa terbaik untuk pasangan terhebat. Semoga menjadi keluarga yang sakinah mawaddah warahmah."
-    },
-    {
-      "name": "Dewi Lestari",
-      "text": "Selamat ya! Semoga pernikahan ini menjadi awal dari kisah cinta yang tak pernah berakhir 💍"
-    }
-  ]
+  "initialWishes": []
 }

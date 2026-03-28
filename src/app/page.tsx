@@ -10,6 +10,74 @@ export default function WeddingPage() {
   const [isOpened, setIsOpened] = useState(false);
   const [guestName, setGuestName] = useState("Tamu Undangan");
 
+  /* ── GUESTBOOK LOGIC ── */
+  const [wishes, setWishes] = useState<any[]>([]);
+  const [wishFilter, setWishFilter] = useState("Semua");
+  const [wishPage, setWishPage] = useState(1);
+  const [isWishesLoading, setIsWishesLoading] = useState(true);
+  const [formName, setFormName] = useState("");
+  const [formText, setFormText] = useState("");
+  const [formAttendance, setFormAttendance] = useState("Hadir");
+
+  const PER_PAGE = 5;
+
+  useEffect(() => {
+    // Load wishes
+    const saved = localStorage.getItem('wedding_wishes');
+    const initialRaw = (configData.initialWishes as any[]).map(w => ({ ...w, timestamp: Date.now() - Math.random() * 100000000 }));
+    if (saved) {
+      setWishes(JSON.parse(saved));
+    } else {
+      setWishes(initialRaw);
+    }
+    
+    // Simulate loading
+    setTimeout(() => setIsWishesLoading(false), 1500);
+  }, []);
+
+  useEffect(() => {
+    if (wishes.length > 0) {
+      localStorage.setItem('wedding_wishes', JSON.stringify(wishes));
+    }
+  }, [wishes]);
+
+  const filteredWishes = wishes.filter(w => {
+    if (wishFilter === "Semua") return true;
+    if (wishFilter === "Hadir") return w.attendance === "Hadir";
+    if (wishFilter === "Doa") return true; // Show all for "Doa" or specific logic
+    return true;
+  }).sort((a, b) => b.timestamp - a.timestamp);
+
+  const paginatedWishes = filteredWishes.slice((wishPage - 1) * PER_PAGE, wishPage * PER_PAGE);
+  const totalPages = Math.ceil(filteredWishes.length / PER_PAGE);
+
+  const handleSendWish = () => {
+    if (!formName || !formText) return;
+    
+    const newWish = {
+      name: formName,
+      text: formText,
+      attendance: formAttendance,
+      timestamp: Date.now()
+    };
+    
+    setWishes([newWish, ...wishes]);
+    setFormName("");
+    setFormText("");
+    
+    // WhatsApp Redirect
+    const text = `Halo, saya ${formName}.\n\n"${formText}"\n\nStatus: ${formAttendance}`;
+    window.open(`https://wa.me/${CONFIG.waNumber}?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const getRelativeTime = (ts: number) => {
+    const diff = (Date.now() - ts) / 1000;
+    if (diff < 60) return 'Baru saja';
+    if (diff < 3600) return `${Math.floor(diff / 60)} menit yang lalu`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} jam yang lalu`;
+    return `${Math.floor(diff / 86400)} hari yang lalu`;
+  };
+
   const CONFIG = {
     groomName: configData.groom.nickname,
     brideName: configData.bride.nickname,
@@ -50,12 +118,9 @@ export default function WeddingPage() {
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#8B4A58', '#C8A882', '#FAF7F4', '#8BAE8C', '#A89DC0', '#E8C5CC']
+      colors: ['#0A0A0A', '#6B6B6B', '#FFFFFF', '#ABABAB']
     });
   };
-  (globalThis as any).launchConfetti = launchConfetti;
-
-
 
   /* ── COUNT UP ── */
   const animateCountUp = (el: HTMLElement, target: number, duration = 1800) => {
@@ -69,20 +134,13 @@ export default function WeddingPage() {
     requestAnimationFrame(step);
   };
 
-  /* ── FLOATING ORNAMENTS ── */
-  const addFloatOrnaments = (section: HTMLElement) => {
-    const svgs = [
-      `<svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 1 L13.5 9.5 L22 11 L13.5 12.5 L12 21 L10.5 12.5 L2 11 L10.5 9.5Z" fill="#C8A882"/></svg>`,
-      `<svg width="20" height="30" viewBox="0 0 20 30"><path d="M10 1 Q16 7 14 17 Q12 25 10 29 Q8 25 6 17 Q4 7 10 1Z" fill="#E8C5CC"/></svg>`
-    ];
-    for (let i = 0; i < 1; i++) { // Diminimalkan menjadi 1 dari 3 untuk performa
-      const o = document.createElement('div');
-      o.className = 'float-ornament';
-      o.innerHTML = svgs[i % svgs.length];
-      o.style.cssText = `left:${[8, 80, 15, 75][i % 4]}%;top:${[15, 25, 65, 50][i % 4]}%;--float-dur:${7 + i * 2}s;--float-delay:${i * 1.5}s;`;
-      section.appendChild(o);
-    }
-  };
+  /* ── PARALLAX COMPONENT ── */
+  const SectionBackground = ({ src, factor = 0.3 }: { src: string, factor?: number }) => (
+    <div className="section-bg-wrapper">
+      <img src={src} alt="" className="section-bg-image js-parallax" data-factor={factor} />
+      <div className="section-overlay"></div>
+    </div>
+  );
 
   useEffect(() => {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -95,8 +153,6 @@ export default function WeddingPage() {
     const nama = params.get('tamu');
     if (nama) { 
       setGuestName(decodeURIComponent(nama));
-      const el = document.getElementById('guest-name'); 
-      if (el) el.textContent = nama; 
     }
 
     /* Scroll Reveal */
@@ -105,64 +161,54 @@ export default function WeddingPage() {
     }, { threshold: 0.1 });
     document.querySelectorAll('[data-reveal]').forEach(el => revealObs.observe(el));
 
-    /* Sparkles */
-    document.querySelectorAll('.has-sparkles').forEach(s => {
-      (s as HTMLElement).style.position = 'relative';
-      for (let i = 0; i < 5; i++) createSparkle(s as HTMLElement); // Diminimalkan dari 14
-    });
-
-    /* Petal rain */
-    const pc = document.createElement('div');
-    pc.id = 'petal-container';
-    pc.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:997;overflow:hidden;';
-    document.body.appendChild(pc);
-    for (let i = 0; i < 5; i++) createPetal(pc); // Diminimalkan dari 12
-
-    /* Float ornaments in each section */
-    document.querySelectorAll('section').forEach(s => addFloatOrnaments(s as HTMLElement));
-
-    /* Parallax (Optimized with rAF) */
-    const parallaxEls = document.querySelectorAll('[data-parallax]');
-    const flowerEls = document.querySelectorAll('.section-flowers');
+    /* Parallax (SCROLL-DRIVEN BACKGROUND MOVEMENT) */
+    const parallaxItems = document.querySelectorAll<HTMLElement>('.js-parallax');
     let ticking = false;
+    const isMobile = window.innerWidth <= 768;
 
-    const updateParallax = () => {
-      if (!isOpened) return;
-      const scrollY = window.scrollY;
+    const handleParallax = () => {
+      if (isMobile || !isOpened) return;
       
-      parallaxEls.forEach(el => {
-        const speed = parseFloat((el as HTMLElement).dataset.parallax || '0.15');
-        (el as HTMLElement).style.transform = `translate3d(0, ${scrollY * speed}px, 0)`;
-      });
-
-      flowerEls.forEach((el, i) => {
-        const drift = Math.sin(scrollY * 0.002 + i) * 15;
-        const parentRect = el.parentElement?.getBoundingClientRect();
-        const yOffset = parentRect ? parentRect.top * 0.15 : scrollY * -0.15;
-        (el as HTMLElement).style.transform = `translate3d(${drift}px, ${yOffset}px, 0)`;
+      const scrollY = window.scrollY;
+      parallaxItems.forEach(el => {
+        const section = el.closest('section');
+        if (!section) return;
+        
+        const rect = section.getBoundingClientRect();
+        const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
+        
+        if (isInViewport) {
+          const factor = parseFloat(el.dataset.factor || '0.3');
+          const sectionTop = section.offsetTop;
+          const offset = (scrollY - sectionTop) * factor;
+          el.style.transform = `translate3d(0, ${offset}px, 0)`;
+        }
       });
       ticking = false;
     };
 
     const onScroll = () => {
       if (!ticking) {
-        window.requestAnimationFrame(updateParallax);
+        window.requestAnimationFrame(handleParallax);
         ticking = true;
       }
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
 
-    /* Float data-float elements */
-    document.querySelectorAll('[data-float]').forEach((el, i) => {
-      const dur = parseFloat((el as HTMLElement).dataset.float || '4');
-      (el as HTMLElement).style.animation = `floatUpDown ${dur}s ease-in-out ${i * 0.5}s infinite`;
+    if (!isMobile) {
+      window.addEventListener('scroll', onScroll, { passive: true });
+    }
+
+    /* Sparkles & Petal rain (Keep as is) */
+    document.querySelectorAll('.has-sparkles').forEach(s => {
+      (s as HTMLElement).style.position = 'relative';
+      for (let i = 0; i < 5; i++) createSparkle(s as HTMLElement);
     });
 
-    /* Flower entrance */
-    const fl = document.querySelector('.flowers-left');
-    const fr = document.querySelector('.flowers-right');
-    if (fl) setTimeout(() => fl.classList.add('flowers-entered'), 350);
-    if (fr) setTimeout(() => fr.classList.add('flowers-entered'), 600);
+    const pc = document.createElement('div');
+    pc.id = 'petal-container';
+    pc.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:997;overflow:hidden;';
+    document.body.appendChild(pc);
+    for (let i = 0; i < 5; i++) createPetal(pc);
 
     /* Flip clock */
     const target = new Date(CONFIG.weddingDate).getTime();
@@ -202,35 +248,18 @@ export default function WeddingPage() {
     }, { threshold: 0.5 });
     sections.forEach(id => { const el = document.getElementById(id); if (el) secObs.observe(el); });
 
-    /* Count-up on buku-tamu */
-    const countObs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          document.querySelectorAll('.counter-number[data-count]').forEach(el => {
-            animateCountUp(el as HTMLElement, parseInt((el as HTMLElement).dataset.count || '0'));
-          });
-          countObs.disconnect();
-        }
-      });
-    }, { threshold: 0.4 });
-    const bukuTamu = document.getElementById('buku-tamu');
-    if (bukuTamu) countObs.observe(bukuTamu);
-
-    /* Confetti on closing section */
+    /* Confetti on closing */
     const closingObs = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) { launchConfetti(); closingObs.disconnect(); } });
     }, { threshold: 0.35 });
     const closing = document.getElementById('closing');
     if (closing) closingObs.observe(closing);
 
-
-
     return () => {
       window.removeEventListener('scroll', onScroll);
       clearInterval(clockInt);
       revealObs.disconnect();
       secObs.disconnect();
-      countObs.disconnect();
       closingObs.disconnect();
       document.getElementById('petal-container')?.remove();
     };
@@ -296,12 +325,12 @@ export default function WeddingPage() {
   /* SVGs inline */
   const FloralDividerSVG = () => (
     <svg viewBox="0 0 300 30" width="280" height="30" className="floral-divider" aria-hidden="true">
-      <line x1="0" y1="15" x2="95" y2="15" stroke="#C8A882" strokeWidth="0.6" strokeOpacity="0.45" />
-      <path d="M115 15 Q125 5 135 15 Q145 25 155 15 Q165 5 175 15" stroke="#8B4A58" strokeWidth="0.9" fill="none" strokeOpacity="0.5" />
-      <circle cx="135" cy="15" r="2.5" fill="#C8A882" fillOpacity="0.7" />
-      <circle cx="105" cy="15" r="1.5" fill="#8B4A58" fillOpacity="0.3" />
-      <circle cx="185" cy="15" r="1.5" fill="#8B4A58" fillOpacity="0.3" />
-      <line x1="205" y1="15" x2="300" y2="15" stroke="#C8A882" strokeWidth="0.6" strokeOpacity="0.45" />
+      <line x1="0" y1="15" x2="95" y2="15" stroke="rgba(255,255,255,0.4)" strokeWidth="0.6" />
+      <path d="M115 15 Q125 5 135 15 Q145 25 155 15 Q165 5 175 15" stroke="rgba(255,255,255,0.6)" strokeWidth="0.9" fill="none" />
+      <circle cx="135" cy="15" r="2.5" fill="rgba(255,255,255,0.7)" />
+      <circle cx="105" cy="15" r="1.5" fill="rgba(255,255,255,0.3)" />
+      <circle cx="185" cy="15" r="1.5" fill="rgba(255,255,255,0.3)" />
+      <line x1="205" y1="15" x2="300" y2="15" stroke="rgba(255,255,255,0.4)" strokeWidth="0.6" />
     </svg>
   );
 
@@ -357,108 +386,91 @@ export default function WeddingPage() {
         ) : null}
 
         {/* ══════════ HERO ══════════ */}
-        <section id="hero" className="has-sparkles" style={{ position: 'relative', overflow: 'hidden' }}>
-          <img src="https://images.unsplash.com/photo-1543165365-0723ec09bbfa?auto=format&fit=crop&w=1200&q=80" alt="" className="story-parallax-bg" data-parallax="0.2" />
-          <div className="story-overlay" style={{ background: 'linear-gradient(to bottom, rgba(250,247,244,0.85), rgba(240,232,224,0.95))' }}></div>
-          <img src="/assets/castle-pink.png" alt="Kastil" className="castle-hero" data-reveal="fade" style={{ position: 'relative', zIndex: 4 }} />
-          <div className="castle-shadow" style={{ position: 'relative', zIndex: 4 }} />
+        <section id="hero" className="section-with-bg has-sparkles">
+          <SectionBackground src="/assets/photo/photo1-trans.png" factor={0.2} />
+          
+          <div className="glass-morphism glass-container-content" style={{ position: 'relative', zIndex: 5, textAlign: 'center', maxWidth: '820px', padding: '3rem', borderRadius: '24px' }} data-reveal="fade">
+            <h1 className="hero-names text-white text-shadow-premium" style={{ marginBottom: '1rem' }}>{configData.bride.nickname} &amp; {configData.groom.nickname}</h1>
 
-          <div style={{ position: 'relative', zIndex: 5, textAlign: 'center', maxWidth: '820px' }}>
-            <h1 className="hero-names shimmer-name" data-reveal="up">{configData.bride.nickname} &amp; {configData.groom.nickname}</h1>
-
-            <div className="hero-quote-box" data-reveal="fade" data-delay="1">
-              <p className="hero-quote">
+            <div className="hero-quote-box" style={{ background: 'transparent', border: 'none' }}>
+              <p className="hero-quote text-white">
                 {configData.hero.quote}
               </p>
-              <p className="hero-verse">{configData.hero.verse}</p>
+              <p className="hero-verse text-white" style={{ opacity: 0.8 }}>{configData.hero.verse}</p>
             </div>
 
-            <div className="countdown-wrapper" data-reveal="up" data-delay="2">
+            <div className="countdown-wrapper" style={{ margin: '2rem 0' }}>
               {['days', 'hours', 'minutes', 'seconds'].map(u => (
                 <div key={u} className={`flip-unit flip-${u}`}>
-                  <div className="flip-card"><span className="flip-value">00</span></div>
-                  <span className="flip-label">{u}</span>
+                  <div className="flip-card" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}><span className="flip-value">00</span></div>
+                  <span className="flip-label text-white" style={{ opacity: 0.7 }}>{u}</span>
                 </div>
               ))}
             </div>
 
-            <div className="calendar-btns" data-reveal="fade" data-delay="3">
+            <div className="calendar-btns">
               <a href={configData.weddingInfo.calendarGoogleLink}
-                target="_blank" rel="noreferrer" className="btn-calendar">📅 Google Calendar</a>
+                target="_blank" rel="noreferrer" className="btn-calendar" style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.1)' }}>📅 Google Calendar</a>
               <a href={configData.weddingInfo.calendarIcsDownload}
-                download="wedding.ics" className="btn-calendar">🗓 Save to Calendar</a>
+                download="wedding.ics" className="btn-calendar" style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.1)' }}>🗓 Save to Calendar</a>
             </div>
           </div>
         </section>
 
         {/* ══════════ PROFIL ══════════ */}
-        <section id="profil" className="has-sparkles">
-          <img src="/assets/ornament-scroll.svg" alt="" className="ornament-divider" style={{ width: '220px', marginBottom: '2rem' }} data-reveal="fade" />
-          <h2 className="section-title" data-reveal="up">Mempelai Berbahagia</h2>
-          <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '1.3rem', color: 'var(--text-muted)', marginBottom: '3.5rem', textAlign: 'center' }} data-reveal="fade" data-delay="1">
-            Assalamu'alaikum Warahmatullahi Wabarakatuh
-          </p>
+        <section id="profil" className="section-with-bg has-sparkles">
+          <SectionBackground src="/assets/photo/photo2-trans.png" factor={0.25} />
+          
+          <div style={{ position: 'relative', zIndex: 5, width: '100%' }}>
+            <h2 className="section-title text-white text-shadow-premium" data-reveal="up">Mempelai Berbahagia</h2>
+            <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '1.2rem', color: 'rgba(255,255,255,0.85)', marginBottom: '3.5rem', textAlign: 'center' }} data-reveal="fade">
+              Assalamu'alaikum Warahmatullahi Wabarakatuh
+            </p>
 
-          <div className="profil-grid">
-            {/* BRIDE */}
-            <div className="profil-card" data-reveal="left">
-              <div className="profil-photo-wrap">
-                {/* Flower crown SVG */}
-                <svg className="flower-crown" viewBox="0 0 80 40" aria-hidden="true">
-                  <path d="M40 35 Q20 20 10 10 Q20 5 30 15 Q35 2 40 8 Q45 2 50 15 Q60 5 70 10 Q60 20 40 35Z" fill="#E8C5CC" opacity="0.8" />
-                  <path d="M40 35 Q20 20 10 10 Q20 5 30 15 Q35 2 40 8 Q45 2 50 15 Q60 5 70 10 Q60 20 40 35Z" fill="none" stroke="#C8A882" strokeWidth="0.8" opacity="0.6" />
-                </svg>
-                <div className="profil-photo-inner">
-                  <img src={configData.bride.photoUrl} alt={configData.bride.nickname} />
+            <div className="profil-joint-container" data-reveal="fade">
+              <div className="profil-photo-joint-wrap">
+                <div className="profil-photo-inner joint-frame">
+                  <img src="/assets/photo/photo1-trans.png" alt="Mempelai" />
                 </div>
               </div>
-              <h3 className="profil-name">{configData.bride.fullName}</h3>
-              <p className="profil-parent" style={{ whiteSpace: 'pre-line' }}>{configData.bride.parents}</p>
-              <a href={configData.bride.instagramLink} className="profil-ig">📸 {configData.bride.instagram}</a>
-            </div>
 
-            {/* AMPERSAND */}
-            <div className="profil-divider" data-reveal="scale" data-delay="2">&amp;</div>
+              <div className="profil-names-joint">
+                <div className="profil-card-mini glass-morphism glass-container-content" style={{ padding: '2rem', borderRadius: '20px' }} data-reveal="left">
+                  <h3 className="profil-name-mini text-white">{configData.bride.fullName}</h3>
+                  <p className="profil-parent-mini" style={{ whiteSpace: 'pre-line' }}>{configData.bride.parents}</p>
+                  <a href={configData.bride.instagramLink} className="profil-ig-mini" style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.1)', padding: '6px 16px', borderRadius: '50px' }}>📸 {configData.bride.instagram}</a>
+                </div>
 
-            {/* GROOM */}
-            <div className="profil-card" data-reveal="right">
-              <div className="profil-photo-wrap">
-                <svg className="flower-crown" viewBox="0 0 80 40" aria-hidden="true">
-                  <path d="M40 35 Q20 20 10 10 Q20 5 30 15 Q35 2 40 8 Q45 2 50 15 Q60 5 70 10 Q60 20 40 35Z" fill="#E8C5CC" opacity="0.8" />
-                  <path d="M40 35 Q20 20 10 10 Q20 5 30 15 Q35 2 40 8 Q45 2 50 15 Q60 5 70 10 Q60 20 40 35Z" fill="none" stroke="#C8A882" strokeWidth="0.8" opacity="0.6" />
-                </svg>
-                <div className="profil-photo-inner">
-                  <img src={configData.groom.photoUrl} alt={configData.groom.nickname} />
+                <div className="profil-divider-mini text-white" style={{ opacity: 0.8 }} data-reveal="scale">&amp;</div>
+
+                <div className="profil-card-mini glass-morphism glass-container-content" style={{ padding: '2rem', borderRadius: '20px' }} data-reveal="right">
+                  <h3 className="profil-name-mini text-white">{configData.groom.fullName}</h3>
+                  <p className="profil-parent-mini" style={{ whiteSpace: 'pre-line' }}>{configData.groom.parents}</p>
+                  <a href={(configData.groom as any).tiktokLink} className="profil-ig-mini" style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.1)', padding: '6px 16px', borderRadius: '50px' }}>📸 {(configData.groom as any).tiktok}</a>
                 </div>
               </div>
-              <h3 className="profil-name">{configData.groom.fullName}</h3>
-              <p className="profil-parent" style={{ whiteSpace: 'pre-line' }}>{configData.groom.parents}</p>
-              <a href={configData.groom.instagramLink} className="profil-ig">📸 {configData.groom.instagram}</a>
             </div>
           </div>
-          <img src="/assets/ornament-scroll.svg" alt="" className="ornament-divider" style={{ width: '220px', marginTop: '3.5rem' }} data-reveal="fade" />
         </section>
 
         {/* ══════════ LOVE STORY ══════════ */}
-        <section id="love-story" style={{ position: 'relative', overflow: 'hidden' }}>
-          <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80" alt="" className="story-parallax-bg" data-parallax="0.25" />
-          <div className="story-overlay" style={{ background: 'linear-gradient(to bottom, rgba(240,232,224,0.8), rgba(240,232,224,0.95))' }}></div>
+        <section id="love-story" className="section-with-bg">
+          <SectionBackground src="/assets/photo/photo3-trans.png" factor={0.2} />
 
           <div style={{ position: 'relative', zIndex: 5, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <h2 className="section-title" data-reveal="up">Kisah Cinta Kami</h2>
-            <p className="love-story-intro" data-reveal="fade" data-delay="1">
+            <h2 className="section-title text-white text-shadow-premium" data-reveal="up">Kisah Cinta Kami</h2>
+            <p className="love-story-intro text-white" style={{ opacity: 0.9, marginBottom: '4rem' }} data-reveal="fade">
               Bagaimana takdir mempertemukan dua hati yang selalu mencari satu sama lain...
             </p>
 
             <div className="timeline" style={{ maxWidth: '800px', width: '100%', zIndex: 5, position: 'relative' }}>
               {configData.loveStory.map((item, i) => (
                 <div key={i} className="timeline-item" data-reveal={item.dir}>
-                  <div className="timeline-dot" style={{ fontSize: '1.2rem' }}>{item.icon}</div>
-                  <div className="timeline-content">
-                    <div className="year-bg">{item.year}</div>
-                    <p className="timeline-date">{item.date}</p>
-                    <h4 className="timeline-title">{item.title}</h4>
-                    <p className="timeline-text">{item.text}</p>
+                  <div className="timeline-dot" style={{ background: 'rgba(255,255,255,0.1)', borderColor: '#FFFFFF', color: '#FFFFFF' }}>{item.icon}</div>
+                  <div className="timeline-content glass-morphism glass-container-content" style={{ padding: '2rem', borderRadius: '16px', borderLeft: 'none', border: '1px solid rgba(255,255,255,0.2)' }}>
+                    <p className="timeline-date text-white" style={{ opacity: 0.8 }}>{item.date}</p>
+                    <h4 className="timeline-title text-white">{item.title}</h4>
+                    <p className="timeline-text text-white" style={{ opacity: 0.85 }}>{item.text}</p>
                   </div>
                 </div>
               ))}
@@ -467,70 +479,33 @@ export default function WeddingPage() {
         </section>
 
         {/* ══════════ ACARA ══════════ */}
-        <section id="acara" className="has-sparkles" style={{ position: 'relative', overflow: 'hidden' }}>
-          <img src="https://images.unsplash.com/photo-1465495910483-0d6745778274?auto=format&fit=crop&w=1200&q=80" alt="" className="story-parallax-bg" data-parallax="0.15" />
-          <div className="story-overlay" style={{ background: 'linear-gradient(to bottom, rgba(250,247,244,0.8), rgba(250,247,244,0.95))' }}></div>
+        <section id="acara" className="section-with-bg has-sparkles">
+          <SectionBackground src="/assets/photo/photo4-trans.png" factor={0.15} />
 
           <div style={{ position: 'relative', zIndex: 5, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <h2 className="section-title" data-reveal="up">Waktu &amp; Tempat</h2>
-            <FloralDividerSVG />
-
-            <div className="countdown-wrapper" data-reveal="fade" style={{ marginBottom: '4rem' }}>
-              {['days', 'hours', 'minutes', 'seconds'].map(u => (
-                <div key={u} className={`flip-unit flip-${u}`}>
-                  <div className="flip-card"><span className="flip-value">00</span></div>
-                  <span className="flip-label">{u}</span>
-                </div>
-              ))}
-            </div>
+            <h2 className="section-title text-white text-shadow-premium" data-reveal="up">Waktu &amp; Tempat</h2>
 
             <div className="event-cards">
               {configData.events.map((ev, i) => (
                 <React.Fragment key={i}>
-                  <div className="event-card" data-reveal={ev.dir}>
-                    <div className="event-card-header">
-                      <svg className="event-icon-svg" viewBox="0 0 60 60" aria-hidden="true">
-                        {ev.iconStyle === 'akad' ? (
-                          <>
-                            <path d="M30 5 L36 20 L52 20 L39 30 L44 46 L30 36 L16 46 L21 30 L8 20 L24 20Z" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" />
-                            <circle cx="30" cy="30" r="8" fill="rgba(255,255,255,0.25)" />
-                            <path d="M26 30 Q30 20 34 30 Q30 40 26 30Z" fill="rgba(255,255,255,0.5)" />
-                          </>
-                        ) : (
-                          <>
-                            <path d="M10 45 Q10 25 20 20 Q30 15 30 10 Q30 15 40 20 Q50 25 50 45Z" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" />
-                            <path d="M20 45 Q20 32 30 28 Q40 32 40 45" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.4)" strokeWidth="1" />
-                            <line x1="10" y1="45" x2="50" y2="45" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" />
-                          </>
-                        )}
-                      </svg>
-                      <h3 className="event-name">{ev.type}</h3>
+                  <div className="event-card glass-morphism glass-container-content" style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '24px', overflow: 'hidden' }} data-reveal={ev.dir}>
+                    <div className="event-card-header" style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                      <h3 className="event-name text-white">{ev.type}</h3>
                     </div>
                     <div className="event-card-body">
-                      <p className="event-datetime">{ev.dateStr}</p>
-                      <div className="event-time-ornaments">
+                      <p className="event-datetime text-white" style={{ fontWeight: 600 }}>{ev.dateStr}</p>
+                      <div className="event-time-ornaments text-white" style={{ opacity: 0.8 }}>
                         <span>✦</span> {ev.timeStr} <span>✦</span>
                       </div>
-                      <p className="event-venue" style={{ whiteSpace: 'pre-line' }}>
-                        <strong>{ev.venueName}</strong><br />
+                      <p className="event-venue text-white" style={{ whiteSpace: 'pre-line', opacity: 0.9 }}>
+                        <strong className="text-white">{ev.venueName}</strong><br />
                         {ev.venueAddress}
                       </p>
-                      <a href={ev.mapsLink} target="_blank" rel="noreferrer" className="btn-maps">
-                        <span className="pin-pulse">📍</span> Lihat Lokasi
+                      <a href={ev.mapsLink} target="_blank" rel="noreferrer" className="btn-maps btn-open" style={{ width: '100%', justifyContent: 'center' }}>
+                         Lihat Lokasi
                       </a>
                     </div>
                   </div>
-
-                  {i < configData.events.length - 1 && (
-                    <div className="event-baroque-divider" data-reveal="fade">
-                      <svg viewBox="0 0 30 120" width="30" height="120" aria-hidden="true">
-                        <line x1="15" y1="0" x2="15" y2="45" stroke="#C8A882" strokeWidth="0.8" strokeOpacity="0.5" />
-                        <circle cx="15" cy="60" r="6" fill="none" stroke="#C8A882" strokeWidth="1" strokeOpacity="0.6" />
-                        <circle cx="15" cy="60" r="2.5" fill="#C8A882" fillOpacity="0.5" />
-                        <line x1="15" y1="75" x2="15" y2="120" stroke="#C8A882" strokeWidth="0.8" strokeOpacity="0.5" />
-                      </svg>
-                    </div>
-                  )}
                 </React.Fragment>
               ))}
             </div>
@@ -538,14 +513,14 @@ export default function WeddingPage() {
         </section>
 
         {/* ══════════ GALERI ══════════ */}
-        <section id="galeri">
-          <h2 className="section-title" data-reveal="up">Galeri Bahagia</h2>
-          <p className="galeri-caption" data-reveal="fade" data-delay="1">
+        <section id="galeri" style={{ background: '#0A0A0A' }}>
+          <h2 className="section-title text-white" data-reveal="up">Galeri Bahagia</h2>
+          <p className="galeri-caption text-white" style={{ opacity: 0.7 }} data-reveal="fade">
             Momen indah yang tertangkap dalam lensa...
           </p>
           <div className="galeri-masonry" style={{ maxWidth: '960px', width: '100%' }}>
             {dummyPhotos.map((src, i) => (
-              <div key={i} className="galeri-item" data-reveal="fade" data-delay={i % 3}
+              <div key={i} className="galeri-item" style={{ border: '1px solid rgba(255,255,255,0.1)', background: '#1C1C1E' }} data-reveal="fade" data-delay={i % 3}
                 data-onclick={`openLightbox('${src}')`}>
                 <img src={src} alt={`Gallery ${i + 1}`} loading="lazy" />
               </div>
@@ -560,143 +535,225 @@ export default function WeddingPage() {
         </div>
 
         {/* ══════════ RSVP ══════════ */}
-        <section id="rsvp">
-          <img src="/assets/ornament-scroll.svg" alt="" className="ornament-divider" style={{ width: '200px', marginBottom: '2rem' }} data-reveal="fade" />
-          <h2 className="section-title" data-reveal="up">Konfirmasi Kehadiran</h2>
-          <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: 'var(--text-muted)', margin: '0.5rem auto 2.5rem', textAlign: 'center' }} data-reveal="fade" data-delay="1">
-            Kehadiran Anda adalah doa terbaik bagi kami
-          </p>
+        <section id="rsvp" className="section-with-bg">
+          <SectionBackground src="/assets/photo/photo5-trans.png" factor={0.2} />
+          
+          <div className="glass-morphism glass-container-content rsvp-form" style={{ position: 'relative', zIndex: 5, padding: '3rem', borderRadius: '24px' }} data-reveal="up">
+            <h2 className="section-title text-white">Konfirmasi Kehadiran</h2>
+            <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: 'rgba(255,255,255,0.8)', margin: '0.5rem auto 2.5rem', textAlign: 'center' }}>
+              Kehadiran Anda adalah doa terbaik bagi kami
+            </p>
 
-          <div className="rsvp-form" data-reveal="up" data-delay="2">
             <div className="form-field">
-              <label className="form-label">Nama Tamu</label>
-              <input type="text" id="rsvp-name" className="form-input" placeholder="Tulis namamu disini..." />
+              <label className="form-label text-white" style={{ opacity: 0.7 }}>Nama Tamu</label>
+              <input type="text" id="rsvp-name" className="form-input" placeholder="Tulis namamu disini..." style={{ background: 'rgba(255,255,255,0.1)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.3)' }} />
             </div>
-            <div className="form-field">
-              <label className="form-label">Konfirmasi Kehadiran</label>
+            <div className="form-field" style={{ marginBottom: '2.5rem' }}>
+              <label className="form-label text-white" style={{ opacity: 0.7 }}>Konfirmasi Kehadiran</label>
               <div className="attendance-options">
                 {['Hadir', 'Tidak Hadir', 'Ragu-ragu'].map(opt => (
-                  <div key={opt} className="att-option" data-onclick={`selectAttendance('${opt}')`}>{opt}</div>
+                  <div key={opt} className={`att-option ${selectedAttendance === opt ? 'selected' : ''}`} data-onclick={`selectAttendance('${opt}')`} style={{ background: 'rgba(255,255,255,0.1)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.3)' }}>{opt}</div>
                 ))}
               </div>
             </div>
-            <button className="btn-open" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }} data-onclick="submitRSVPForm()">
+            <button className="btn-open" style={{ width: '100%', justifyContent: 'center' }} data-onclick="submitRSVPForm()">
               💌 Kirim via WhatsApp
             </button>
           </div>
         </section>
 
         {/* ══════════ AMPLOP ══════════ */}
-        <section id="amplop">
-          <h2 className="section-title" data-reveal="up">Kado Pernikahan</h2>
-          <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: 'var(--text-muted)', margin: '0.5rem auto 1rem', textAlign: 'center' }} data-reveal="fade" data-delay="1">
-            Doa restu Anda adalah hadiah terindah. Namun jika ingin berbagi kebaikan:
-          </p>
-          <FloralDividerSVG />
+        <section id="amplop" className="section-with-bg">
+          <SectionBackground src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1920&q=80" factor={0.25} />
+          
+          <div style={{ position: 'relative', zIndex: 5, width: '100%', textAlign: 'center' }}>
+            <h2 className="section-title text-white text-shadow-premium">Kado Pernikahan</h2>
 
-          <div className="rekening-cards">
-            {configData.bankAccounts.map((acc, i) => (
-              <React.Fragment key={i}>
-                <div className="rekening-card" data-reveal={acc.dir}>
-                  <p className="bank-name">{acc.bank}</p>
-                  <p className="rek-number">{acc.numberFormatted}</p>
-                  <p className="rek-owner">{acc.owner}</p>
-                  <button className="btn-copy" data-onclick={`copyRekening('${acc.number}')`}>📋 Salin Rekening</button>
+            <div className="rekening-cards">
+              {configData.bankAccounts.map((acc, i) => (
+                <div key={i} className="rekening-card glass-morphism glass-container-content" style={{ padding: '2.5rem', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.2)' }} data-reveal={acc.dir}>
+                  <p className="bank-name text-white">{acc.bank}</p>
+                  <p className="rek-number text-white" style={{ fontSize: '1.8rem' }}>{acc.numberFormatted}</p>
+                  <p className="rek-owner text-white" style={{ opacity: 0.8 }}>{acc.owner}</p>
+                  <button className="btn-copy btn-open" style={{ padding: '8px 20px', fontSize: '0.85rem' }} data-onclick={`copyRekening('${acc.number}')`}>📋 Salin</button>
                 </div>
-                {i < configData.bankAccounts.length - 1 && (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 0.5rem' }}>
-                    <svg viewBox="0 0 30 80" width="30" height="80" aria-hidden="true">
-                      <line x1="15" y1="0" x2="15" y2="28" stroke="#C8A882" strokeWidth="0.8" strokeOpacity="0.5" />
-                      <circle cx="15" cy="40" r="5" fill="none" stroke="#C8A882" strokeWidth="1" strokeOpacity="0.6" />
-                      <circle cx="15" cy="40" r="2" fill="#C8A882" fillOpacity="0.5" />
-                      <line x1="15" y1="52" x2="15" y2="80" stroke="#C8A882" strokeWidth="0.8" strokeOpacity="0.5" />
-                    </svg>
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          <div style={{ marginTop: '2rem' }} data-reveal="up">
-            <button className="btn-open" data-onclick="confirmGiftWA()">
-              💚 Konfirmasi via WhatsApp
+            <button className="btn-open" data-onclick="confirmGiftWA()" data-reveal="up">
+               Konfirmasi via WhatsApp
             </button>
           </div>
         </section>
 
         {/* ══════════ BUKU TAMU ══════════ */}
-        <section id="buku-tamu" className="has-sparkles">
-          <h2 className="section-title" data-reveal="up">Ucapan &amp; Doa</h2>
-          <FloralDividerSVG />
-
-          <div className="wish-counter" data-reveal="fade" data-delay="1">
-            <div className="counter-item">
-              <p className="counter-number" data-count={configData.guestBookStats.invited}>0</p>
-              <p className="counter-label">Tamu Diundang</p>
+        <section id="buku-tamu" className="section-with-bg has-sparkles" style={{ padding: '6rem 2rem' }}>
+          <SectionBackground src="/assets/photo/photo3-trans.png" factor={0.15} />
+          
+          <div style={{ position: 'relative', zIndex: 10, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div style={{ textAlign: 'center', marginBottom: '3.5rem' }} data-reveal="fade">
+              <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.8rem', letterSpacing: '4px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: '0.5rem' }}>WEDDING OF {configData.bride.nickname} & {configData.groom.nickname}</p>
+              <h2 className="section-title text-white" style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', margin: 0 }}>Ucapan & Doa</h2>
             </div>
-            <div className="counter-item">
-              <p className="counter-number" data-count={configData.guestBookStats.attending}>0</p>
-              <p className="counter-label">Konfirmasi Hadir</p>
-            </div>
-            <div className="counter-item">
-              <p className="counter-number" data-count={configData.guestBookStats.wishes}>0</p>
-              <p className="counter-label">Ucapan &amp; Doa</p>
-            </div>
-          </div>
 
-          <div className="wish-form" data-reveal="up" data-delay="2">
-            <input type="text" id="wish-name" className="form-input" placeholder="Nama kamu..." />
-            <textarea id="wish-text" className="form-input" placeholder="Tulis ucapan dan doa terbaikmu di sini..." />
-            <button className="btn-open" style={{ width: '100%', justifyContent: 'center' }} data-onclick="submitWishForm()">
-              ✉ Kirim Ucapan
-            </button>
-          </div>
+            <div className="guestbook-grid">
+              {/* Panel Kiri: Form */}
+              <div className="guestbook-panel" data-reveal="left">
+                <p style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '1.5rem' }}>Tulis Ucapanmu</p>
+                
+                <div className="form-field" style={{ marginBottom: '1.25rem' }}>
+                  <label className="form-label" style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.6, marginBottom: '8px', display: 'block' }}>NAMA</label>
+                  <input 
+                    type="text" 
+                    className="form-input" 
+                    placeholder="Nama lengkap kamu..." 
+                    value={formName}
+                    onChange={(e) => setFormName(e.target.value)}
+                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                  />
+                </div>
 
-          <div className="wishes-list" data-reveal="up">
-            {configData.initialWishes.map((w, i) => (
-              <div key={i} className="wish-bubble" data-reveal="up" data-delay={i % 3 as number}>
-                <p className="wish-bubble-name">{w.name}</p>
-                <p className="wish-bubble-text">"{w.text}"</p>
+                <div className="form-field">
+                  <label className="form-label" style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.6, marginBottom: '8px', display: 'block' }}>UCAPAN & DOA</label>
+                  <textarea 
+                    className="form-input" 
+                    rows={5}
+                    placeholder="Tuliskan doa dan harapanmu untuk kami di sini..." 
+                    maxLength={280}
+                    value={formText}
+                    onChange={(e) => setFormText(e.target.value)}
+                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', height: '140px' }}
+                  />
+                  <div className="form-char-counter">{formText.length} / 280 karakter</div>
+                </div>
+
+                <div className="form-field">
+                  <label className="form-label" style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.6, marginBottom: '8px', display: 'block', marginTop: '1.5rem' }}>KEHADIRAN</label>
+                  <div className="attendance-chips">
+                    <div className={`chip ${formAttendance === 'Hadir' ? 'active' : ''}`} onClick={() => setFormAttendance('Hadir')}>
+                      <span>✓</span> Hadir
+                    </div>
+                    <div className={`chip ${formAttendance === 'Tidak Hadir' ? 'active' : ''}`} onClick={() => setFormAttendance('Tidak Hadir')}>
+                      <span>✕</span> Tidak Hadir
+                    </div>
+                  </div>
+                </div>
+
+                <button className="btn-open" style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }} onClick={handleSendWish}>
+                  ✉ Kirim Ucapan
+                </button>
+                <p style={{ fontSize: '0.75rem', textAlign: 'center', color: 'rgba(255,255,255,0.4)', marginTop: '1.25rem', lineHeight: '1.5' }}>
+                  Ucapanmu akan langsung tampil<br/>di halaman ini setelah terkirim
+                </p>
               </div>
-            ))}
+
+              {/* Panel Kanan: Feed */}
+              <div className="guestbook-panel" data-reveal="right" style={{ justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <p style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Ucapan Tamu</p>
+                    <div className="filter-tabs" style={{ minWidth: '220px' }}>
+                      {['Semua', 'Hadir', 'Doa'].map(f => (
+                        <div key={f} className={`filter-tab ${wishFilter === f ? 'active' : ''}`} onClick={() => { setWishFilter(f); setWishPage(1); }}>{f}</div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="stat-pills">
+                    <div className="stat-pill">
+                      <span className="stat-pill-val">{wishes.length}</span>
+                      <span className="stat-pill-label">Ucapan</span>
+                    </div>
+                    <div className="stat-pill">
+                      <span className="stat-pill-val">{wishes.filter(w => w.attendance === 'Hadir').length}</span>
+                      <span className="stat-pill-label">Hadir</span>
+                    </div>
+                    <div className="stat-pill">
+                      <span className="stat-pill-val">{wishes.filter(w => w.attendance !== 'Hadir').length}</span>
+                      <span className="stat-pill-label">Tidak Hadir</span>
+                    </div>
+                  </div>
+
+                  <div className="wishes-feed" style={{ minHeight: '400px' }}>
+                    {isWishesLoading ? (
+                      [1, 2, 3].map(i => (
+                        <div key={i} className="comment-card skeleton" style={{ height: '120px' }} />
+                      ))
+                    ) : (
+                      paginatedWishes.map((w, i) => (
+                        <div key={i} className="comment-card" data-reveal="fade">
+                          <div className="comment-header">
+                            <div className="comment-avatar">{(w.name || 'T').substring(0, 2).toUpperCase()}</div>
+                            <div className="comment-info">
+                              <h4 className="comment-name text-white">{w.name}</h4>
+                              <span className="comment-time">{getRelativeTime(w.timestamp)}</span>
+                            </div>
+                            <span className={`comment-badge ${w.attendance === 'Hadir' ? 'hadir' : 'doa'}`}>{w.attendance === 'Hadir' ? 'Hadir' : 'Doa'}</span>
+                          </div>
+                          <p className="comment-text">"{w.text}"</p>
+                        </div>
+                      ))
+                    )}
+                    {!isWishesLoading && paginatedWishes.length === 0 && (
+                      <div style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.5 }}>Belum ada ucapan untuk kategori ini.</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="pagination-container">
+                  <span className="pag-info">Hal. {wishPage} dari {totalPages || 1}</span>
+                  
+                  <div className="pag-dots">
+                    {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => (
+                      <div 
+                        key={i} 
+                        className={`pag-dot ${wishPage === i + 1 ? 'active' : ''}`}
+                        onClick={() => setWishPage(i + 1)}
+                      />
+                    ))}
+                    {totalPages > 5 && <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>...</span>}
+                  </div>
+
+                  <div className="pag-btns">
+                    <button className="pag-btn" disabled={wishPage === 1} onClick={() => setWishPage(p => p - 1)}>
+                      ‹
+                    </button>
+                    <button className="pag-btn" disabled={wishPage === totalPages || totalPages === 0} onClick={() => setWishPage(p => p + 1)}>
+                      ›
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
         {/* ══════════ CLOSING ══════════ */}
-        <section id="closing" style={{ position: 'relative', overflow: 'hidden' }}>
-          <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80" alt="" className="story-parallax-bg" data-parallax="0.2" />
-          <div className="story-overlay" style={{ background: 'linear-gradient(to bottom, rgba(240,232,224,0.7), rgba(240,232,224,0.92))' }}></div>
+        <section id="closing" className="section-with-bg">
+          <SectionBackground src="/assets/photo/photo1-trans.png" factor={0.2} />
 
-          <img src="/assets/frame-baroque.png" alt="" className="closing-frame" style={{ zIndex: 3 }} />
-          <img src="/assets/flowers-left.png" alt="" className="section-flowers" data-reveal="left"
-            style={{ position: 'absolute', bottom: '0', left: '-8%', width: 'clamp(200px,38%,380px)', zIndex: 4, opacity: 0.8 }} />
-          <img src="/assets/flowers-right.png" alt="" className="section-flowers" data-reveal="right"
-            style={{ position: 'absolute', bottom: '0', right: '-8%', width: 'clamp(200px,35%,350px)', zIndex: 4, opacity: 0.8 }} />
-
-          <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: '800px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '4rem' }}>
-            <img src="/assets/ornament-scroll.svg" alt="" className="ornament-divider" style={{ width: '180px', marginBottom: '1.5rem' }} data-reveal="fade" />
-            <p className="closing-message" data-reveal="up" style={{ fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '1rem' }}>
+          <div className="glass-morphism glass-container-content" style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: '800px', padding: '4rem', borderRadius: '32px' }} data-reveal="up">
+            <p className="closing-message text-white">
               Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu kepada kami.
             </p>
-            <h2 className="closing-couple shimmer-name" data-reveal="scale" data-delay="1" style={{ fontSize: '3.8rem', margin: '0.2rem 0' }}>
+            <h2 className="closing-couple text-white text-shadow-premium" style={{ fontSize: '3.8rem', margin: '1rem 0' }}>
               {configData.bride.nickname} &amp; {configData.groom.nickname}
             </h2>
-            <FloralDividerSVG />
 
-            <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: 'var(--text-muted)', fontSize: '1.25rem', marginTop: '1.5rem', marginBottom: '2.5rem' }} data-reveal="fade" data-delay="2">
+            <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: 'rgba(255,255,255,0.85)', fontSize: '1.25rem', marginTop: '1.5rem', marginBottom: '2.5rem' }}>
               Wassalamu'alaikum Warahmatullahi Wabarakatuh
             </p>
 
-            <button className="btn-open" style={{ margin: '0 auto' }} data-onclick="shareInvitation()" data-reveal="up" data-delay="3">
-              <span style={{ marginRight: '8px' }}>🔗</span> Bagikan Undangan
+            <button className="btn-open" style={{ margin: '0 auto' }} data-onclick="shareInvitation()">
+               Bagikan Undangan
             </button>
           </div>
 
-          <footer className="watermark-footer" data-reveal="fade" data-delay="4" style={{ position: 'absolute', bottom: '20px', left: '0', width: '100%', textAlign: 'center', zIndex: 10 }}>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#C8A882', letterSpacing: '1.5px', textTransform: 'uppercase', margin: '0 0 5px 0' }}>
-              Created with <span style={{ color: '#8B4A58' }}>♥</span> by <strong style={{ color: '#8B4A58', fontWeight: '700' }}>Ackmad Elfan Purnama</strong>
+          <footer className="watermark-footer" data-reveal="fade" style={{ position: 'absolute', bottom: '20px', left: '0', width: '100%', textAlign: 'center', zIndex: 10 }}>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.85rem', color: '#FFFFFF', letterSpacing: '1.5px', textTransform: 'uppercase', margin: '0 0 5px 0', opacity: 0.6 }}>
+              Created with ♥ by <strong style={{ fontWeight: '700' }}>Ackmad Elfan Purnama</strong>
             </p>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', color: 'rgba(200, 168, 130, 0.7)', margin: '0' }}>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.4)', margin: '0' }}>
               Digital Wedding Invitation © 2026
             </p>
           </footer>
