@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   title: `The Wedding of ${configData.bride.nickname} & ${configData.groom.nickname}`,
   description:
     "Dengan penuh rasa syukur dan kebahagiaan, kami mengundang Anda untuk hadir dan merayakan hari istimewa kami.",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
