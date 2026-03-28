@@ -10,7 +10,7 @@
   background: #FAF7F4;
   z-index: 1000;
   overflow: hidden;
-  opacity: 0; 
+  opacity: 0;
   transition: opacity 1.5s ease-out, transform 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
   transform: translateY(2%);
 }
@@ -44,7 +44,7 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.65) 100%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.65) 100%);
 }
 
 .content {
@@ -77,8 +77,15 @@
 }
 
 @keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(30px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .initialsContainer {
@@ -94,7 +101,7 @@
   font-size: clamp(3rem, 10vw, 5.5rem);
   color: #FFFFFF;
   line-height: 1;
-  text-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .ampersand {
@@ -120,7 +127,7 @@
   color: #FFFFFF;
   line-height: 1.1;
   margin: 0;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .openBtnContainer {
@@ -165,7 +172,7 @@
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.4s ease;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -174,7 +181,7 @@
 .openBtn:hover {
   background: #F8F7F5;
   transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
 }
 
 /* Mobile responsive adjustments */
@@ -185,10 +192,55 @@
     top: -5%;
     left: -15%;
   }
+
   .flowerBottomRight {
     width: 65%;
     height: 65%;
     bottom: -5%;
     right: -15%;
+  }
+}
+
+@media (max-width: 375px) {
+  .glassWrapper {
+    padding: 2.5rem 1.5rem;
+    width: 92%;
+    border-radius: 20px;
+  }
+
+  .initial {
+    font-size: 3rem;
+  }
+
+  .ampersand {
+    font-size: 1.5rem;
+  }
+
+  .fullNames {
+    font-size: 3rem;
+  }
+
+  .weddingOf {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    margin-top: 1rem;
+  }
+
+  .guestGreet {
+    font-size: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .guestGreet span {
+    font-size: 1.3rem;
+  }
+
+  .openBtn {
+    padding: 12px 32px;
+    font-size: 0.8rem;
+  }
+
+  .openBtnContainer {
+    margin-top: 2.5rem;
   }
 }

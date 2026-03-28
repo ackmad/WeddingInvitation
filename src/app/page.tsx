@@ -4,9 +4,9 @@ import "./globals.css";
 import configData from "../data/weddingConfig.json";
 import SplashSection from "../components/SplashSection";
 import confetti from "canvas-confetti";
+import { addWish, subscribeToWishes } from "@/lib/firestore";
 
 export default function WeddingPage() {
-  const [selectedAttendance, setSelectedAttendance] = useState("");
   const [isOpened, setIsOpened] = useState(false);
   const [guestName, setGuestName] = useState("Tamu Undangan");
 
@@ -22,24 +22,20 @@ export default function WeddingPage() {
   const PER_PAGE = 5;
 
   useEffect(() => {
-    // Load wishes
-    const saved = localStorage.getItem('wedding_wishes');
-    const initialRaw = (configData.initialWishes as any[]).map(w => ({ ...w, timestamp: Date.now() - Math.random() * 100000000 }));
-    if (saved) {
-      setWishes(JSON.parse(saved));
-    } else {
-      setWishes(initialRaw);
-    }
-    
-    // Simulate loading
-    setTimeout(() => setIsWishesLoading(false), 1500);
-  }, []);
+    // Subscribe to wishes from Firestore in real-time
+    const unsubscribe = subscribeToWishes((updatedWishes) => {
+      if (updatedWishes.length > 0) {
+        setWishes(updatedWishes);
+      } else {
+        // Fallback to initial wishes if Firestore is empty
+        const initialRaw = (configData.initialWishes as any[]).map(w => ({ ...w, timestamp: Date.now() - Math.random() * 100000000 }));
+        setWishes(initialRaw);
+      }
+      setIsWishesLoading(false);
+    });
 
-  useEffect(() => {
-    if (wishes.length > 0) {
-      localStorage.setItem('wedding_wishes', JSON.stringify(wishes));
-    }
-  }, [wishes]);
+    return () => unsubscribe();
+  }, []);
 
   const filteredWishes = wishes.filter(w => {
     if (wishFilter === "Semua") return true;
@@ -51,23 +47,28 @@ export default function WeddingPage() {
   const paginatedWishes = filteredWishes.slice((wishPage - 1) * PER_PAGE, wishPage * PER_PAGE);
   const totalPages = Math.ceil(filteredWishes.length / PER_PAGE);
 
-  const handleSendWish = () => {
+  const handleSendWish = async () => {
     if (!formName || !formText) return;
-    
-    const newWish = {
-      name: formName,
-      text: formText,
-      attendance: formAttendance,
-      timestamp: Date.now()
-    };
-    
-    setWishes([newWish, ...wishes]);
-    setFormName("");
-    setFormText("");
-    
-    // WhatsApp Redirect
-    const text = `Halo, saya ${formName}.\n\n"${formText}"\n\nStatus: ${formAttendance}`;
-    window.open(`https://wa.me/${CONFIG.waNumber}?text=${encodeURIComponent(text)}`, '_blank');
+
+    try {
+      const newWish = {
+        name: formName,
+        text: formText,
+        attendance: formAttendance,
+      };
+
+      // Save to Firestore
+      await addWish(newWish);
+
+      setFormName("");
+      setFormText("");
+
+      // WhatsApp Redirect
+      const text = `Halo, saya ${formName}.\n\n"${formText}"\n\nStatus: ${formAttendance}`;
+      window.open(`https://wa.me/${CONFIG.waNumber}?text=${encodeURIComponent(text)}`, '_blank');
+    } catch (error) {
+      alert("Gagal mengirim ucapan. Silakan coba lagi.");
+    }
   };
 
   const getRelativeTime = (ts: number) => {
@@ -151,15 +152,15 @@ export default function WeddingPage() {
 
     const params = new URLSearchParams(window.location.search);
     const nama = params.get('tamu');
-    if (nama) { 
+    if (nama) {
       setGuestName(decodeURIComponent(nama));
     }
 
     /* Scroll Reveal - Repeatable animate in and out (Fade In & Fade Out) */
     const revealObs = new IntersectionObserver(entries => {
-      entries.forEach(e => { 
-        if (e.isIntersecting) { 
-          e.target.classList.add('revealed'); 
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('revealed');
         } else {
           // Removes class when element scrolls out of view, triggering fade-out animation
           e.target.classList.remove('revealed');
@@ -175,15 +176,15 @@ export default function WeddingPage() {
 
     const handleParallax = () => {
       if (isMobile || !isOpened) return;
-      
+
       const scrollY = window.scrollY;
       parallaxItems.forEach(el => {
         const section = el.closest('section');
         if (!section) return;
-        
+
         const rect = section.getBoundingClientRect();
         const isInViewport = rect.top < window.innerHeight && rect.bottom > 0;
-        
+
         if (isInViewport) {
           const factor = parseFloat(el.dataset.factor || '0.3');
           const sectionTop = section.offsetTop;
@@ -240,7 +241,7 @@ export default function WeddingPage() {
     }, 1000);
 
     /* Dot nav */
-    const sections = ['hero', 'profil', 'love-story', 'acara', 'galeri', 'rsvp', 'amplop', 'buku-tamu', 'closing'];
+    const sections = ['hero', 'profil', 'love-story', 'acara', 'galeri', 'amplop', 'buku-tamu', 'closing'];
     const dots = document.querySelectorAll('.dot-item');
     const secObs = new IntersectionObserver(entries => {
       entries.forEach(e => {
@@ -277,7 +278,7 @@ export default function WeddingPage() {
     document.body.classList.remove('locked');
     document.getElementById('splash')?.classList.add('hide');
     const audio = document.getElementById('bg-music') as HTMLAudioElement;
-    if (audio) { 
+    if (audio) {
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
@@ -300,13 +301,6 @@ export default function WeddingPage() {
   };
   const closeLightbox = () => document.getElementById('lightbox')?.classList.remove('open');
 
-  const submitRSVPForm = () => {
-    const name = (document.getElementById('rsvp-name') as HTMLInputElement)?.value.trim();
-    if (!name) { alert('Mohon isi nama terlebih dahulu.'); return; }
-    if (!selectedAttendance) { alert('Mohon pilih konfirmasi kehadiran.'); return; }
-    const msg = encodeURIComponent(`Halo, saya ${name} ingin konfirmasi kehadiran: ${selectedAttendance}. Terima kasih!`);
-    window.open(`https://wa.me/${CONFIG.waNumber}?text=${msg}`, '_blank');
-  };
 
   const copyRekening = (nomor: string) => {
     navigator.clipboard.writeText(nomor).then(() => alert('Nomor rekening ' + nomor + ' tersalin!'));
@@ -356,7 +350,6 @@ export default function WeddingPage() {
         if (!action) return;
         if (action.includes('openInvitation()')) openInvitation();
         else if (action.includes('closeLightbox()')) closeLightbox();
-        else if (action.includes('submitRSVPForm()')) submitRSVPForm();
         else if (action.includes('confirmGiftWA()')) confirmGiftWA();
         else if (action.includes('submitWishForm()')) submitWishForm();
         else if (action.includes('shareInvitation()')) shareInvitation();
@@ -378,14 +371,6 @@ export default function WeddingPage() {
           }
         }
         else if (action.includes('scrollToSection')) { const m = action.match(/'([^']+)'/); if (m?.[1]) document.getElementById(m[1])?.scrollIntoView({ behavior: 'smooth' }); }
-        else if (action.includes('selectAttendance')) {
-          const m = action.match(/'([^']+)'/);
-          if (m?.[1]) {
-            document.querySelectorAll('.att-option').forEach(o => o.classList.remove('selected'));
-            t.classList.add('selected');
-            setSelectedAttendance(m[1]);
-          }
-        }
       }}>
 
         <button id="music-btn" data-onclick="toggleMusic()" aria-label="Play/Pause musik" title="Musik" style={{ opacity: isOpened ? 1 : 0, transition: 'opacity 1s ease 0.8s', pointerEvents: isOpened ? 'auto' : 'none' }}>♪</button>
@@ -394,7 +379,7 @@ export default function WeddingPage() {
         </audio>
 
         <nav id="dot-nav" aria-label="Section navigation" style={{ opacity: isOpened ? 1 : 0, pointerEvents: isOpened ? 'auto' : 'none', transition: 'opacity 1s ease 0.8s' }}>
-          {['hero', 'profil', 'love-story', 'acara', 'galeri', 'rsvp', 'amplop', 'buku-tamu', 'closing'].map((id, i) => (
+          {['hero', 'profil', 'love-story', 'acara', 'galeri', 'amplop', 'buku-tamu', 'closing'].map((id, i) => (
             <div key={id} className={`dot-item${i === 0 ? ' active' : ''}`} data-onclick={`scrollToSection('${id}')`} title={id} />
           ))}
         </nav>
@@ -406,9 +391,9 @@ export default function WeddingPage() {
 
         {/* ══════════ SPLASH ══════════ */}
         {!isOpened ? (
-          <SplashSection 
-            guestName={guestName} 
-            onOpen={openInvitation} 
+          <SplashSection
+            guestName={guestName}
+            onOpen={openInvitation}
             brideName={CONFIG.brideName}
             groomName={CONFIG.groomName}
           />
@@ -417,8 +402,8 @@ export default function WeddingPage() {
         {/* ══════════ HERO ══════════ */}
         <section id="hero" className="section-with-bg has-sparkles">
           <SectionBackground src="/assets/photo/photo1-trans.png" factor={0.2} />
-          
-          <div className="glass-morphism glass-container-content" style={{ position: 'relative', zIndex: 5, textAlign: 'center', maxWidth: '820px', padding: '3rem', borderRadius: '24px' }} data-reveal="fade">
+
+          <div className="glass-morphism glass-container-content" style={{ position: 'relative', zIndex: 5, textAlign: 'center', width: '92%', maxWidth: '820px' }} data-reveal="fade">
             <h1 className="hero-names text-white text-shadow-premium" style={{ marginBottom: '1rem' }}>{configData.bride.nickname} &amp; {configData.groom.nickname}</h1>
 
             <div className="hero-quote-box" style={{ background: 'transparent', border: 'none' }}>
@@ -428,10 +413,10 @@ export default function WeddingPage() {
               <p className="hero-verse text-white" style={{ opacity: 0.8 }}>{configData.hero.verse}</p>
             </div>
 
-            <div className="countdown-wrapper" style={{ margin: '2rem 0' }}>
+            <div className="countdown-wrapper" style={{ margin: '1.5rem 0' }}>
               {['days', 'hours', 'minutes', 'seconds'].map(u => (
                 <div key={u} className={`flip-unit flip-${u}`}>
-                  <div className="flip-card" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}><span className="flip-value">00</span></div>
+                  <div className="flip-card"><span className="flip-value">00</span></div>
                   <span className="flip-label text-white" style={{ opacity: 0.7 }}>{u}</span>
                 </div>
               ))}
@@ -449,7 +434,7 @@ export default function WeddingPage() {
         {/* ══════════ PROFIL ══════════ */}
         <section id="profil" className="section-with-bg has-sparkles">
           <SectionBackground src="/assets/photo/photo2-trans.png" factor={0.25} style={{ objectPosition: '80% 20%' }} />
-          
+
           <div style={{ position: 'relative', zIndex: 5, width: '100%' }}>
             <h2 className="section-title text-white text-shadow-premium" data-reveal="up">Mempelai Berbahagia</h2>
             <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '1.2rem', color: 'rgba(255,255,255,0.85)', marginBottom: '3.5rem', textAlign: 'center' }} data-reveal="fade">
@@ -463,7 +448,7 @@ export default function WeddingPage() {
                   <path d="M50 0 C20 0 0 20 0 50 C0 80 20 100 50 100 C80 100 100 80 100 50 C100 20 80 0 50 0 Z" fill="#E8C5CC" opacity="0.6" />
                   <path d="M50 15 C30 15 15 30 15 50 C15 70 30 85 50 85 C70 85 85 70 85 50 C85 30 70 15 50 15 Z" fill="#8B4A58" opacity="0.4" />
                 </svg>
-                
+
                 {/* Gold Sparkle Top Right */}
                 <svg className="cute-vector vector-tr" viewBox="0 0 100 100" style={{ top: '-8%', right: '-5%', width: '45px' }}>
                   <path d="M50 0 Q50 50 100 50 Q50 50 50 100 Q50 50 0 50 Q50 50 50 0 Z" fill="#C8A882" />
@@ -485,7 +470,7 @@ export default function WeddingPage() {
               </div>
 
               <div className="profil-names-joint">
-                <div className="profil-card-mini glass-morphism glass-container-content" style={{ padding: '2rem', borderRadius: '20px' }} data-reveal="left">
+                <div className="profil-card-mini glass-morphism glass-container-content" style={{ borderRadius: '20px' }} data-reveal="left">
                   <h3 className="profil-name-mini text-white">{configData.bride.fullName}</h3>
                   <p className="profil-parent-mini" style={{ whiteSpace: 'pre-line' }}>{configData.bride.parents}</p>
                   <a href={configData.bride.instagramLink} className="profil-ig-mini" style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.1)', padding: '6px 16px', borderRadius: '50px' }}>📸 {configData.bride.instagram}</a>
@@ -493,7 +478,7 @@ export default function WeddingPage() {
 
                 <div className="profil-divider-mini text-white" style={{ opacity: 0.8 }} data-reveal="scale">&amp;</div>
 
-                <div className="profil-card-mini glass-morphism glass-container-content" style={{ padding: '2rem', borderRadius: '20px' }} data-reveal="right">
+                <div className="profil-card-mini glass-morphism glass-container-content" style={{ borderRadius: '20px' }} data-reveal="right">
                   <h3 className="profil-name-mini text-white">{configData.groom.fullName}</h3>
                   <p className="profil-parent-mini" style={{ whiteSpace: 'pre-line' }}>{configData.groom.parents}</p>
                   <a href={(configData.groom as any).tiktokLink} className="profil-ig-mini" style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.1)', padding: '6px 16px', borderRadius: '50px' }}>📸 {(configData.groom as any).tiktok}</a>
@@ -517,7 +502,7 @@ export default function WeddingPage() {
               {configData.loveStory.map((item, i) => (
                 <div key={i} className="timeline-item" data-reveal={item.dir}>
                   <div className="timeline-dot" style={{ background: 'rgba(255,255,255,0.1)', borderColor: '#FFFFFF', color: '#FFFFFF' }}>{item.icon}</div>
-                  <div className="timeline-content glass-morphism glass-container-content" style={{ padding: '2rem', borderRadius: '16px', borderLeft: 'none', border: '1px solid rgba(255,255,255,0.2)' }}>
+                  <div className="timeline-content glass-morphism glass-container-content" style={{ borderRadius: '16px', borderLeft: 'none', border: '1px solid rgba(255,255,255,0.2)' }}>
                     <p className="timeline-date text-white" style={{ opacity: 0.8 }}>{item.date}</p>
                     <h4 className="timeline-title text-white">{item.title}</h4>
                     <p className="timeline-text text-white" style={{ opacity: 0.85 }}>{item.text}</p>
@@ -552,7 +537,7 @@ export default function WeddingPage() {
                         {ev.venueAddress}
                       </p>
                       <a href={ev.mapsLink} target="_blank" rel="noreferrer" className="btn-maps btn-open" style={{ width: '100%', justifyContent: 'center' }}>
-                         Lihat Lokasi
+                        Lihat Lokasi
                       </a>
                     </div>
                   </div>
@@ -563,28 +548,28 @@ export default function WeddingPage() {
         </section>
 
         {/* ══════════ GALERI ══════════ */}
-        <section id="galeri" className="section-with-bg has-sparkles">
+        <section id="galeri" className="section-with-bg" style={{ background: '#0a0a0a' }}>
           <SectionBackground 
-            src="https://images.unsplash.com/photo-1520854221956-7012df34844c?auto=format&fit=crop&w=1920&q=80" 
-            factor={0.2} 
-            overlayStyle={{ background: 'linear-gradient(to bottom, rgba(16, 25, 36, 0.92) 0%, rgba(10, 15, 22, 0.96) 100%)' }}
+            src="/assets/photo/photo4.jpeg" 
+            factor={0.12} 
+            overlayStyle={{ background: 'linear-gradient(to bottom, rgba(10, 10, 10, 0.8) 0%, rgba(15, 15, 15, 0.95) 100%)' }} 
           />
-
-          <div style={{ position: 'relative', zIndex: 5, width: '100%', textAlign: 'center' }}>
-            <h2 className="section-title text-white" data-reveal="up">Galeri Bahagia</h2>
-            <p className="galeri-caption text-white" style={{ opacity: 0.7 }} data-reveal="fade">
+          <div style={{ position: 'relative', zIndex: 5, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <h2 className="section-title text-white text-shadow-premium" data-reveal="up">Galeri Bahagia</h2>
+            <p className="galeri-caption text-white" style={{ opacity: 0.75, textAlign: 'center', marginBottom: '3rem' }} data-reveal="fade">
               Momen indah yang tertangkap dalam lensa...
             </p>
             <div className="galeri-masonry" style={{ maxWidth: '960px', width: '100%' }}>
-            {dummyPhotos.map((src, i) => (
-              <div key={i} className="galeri-item" style={{ border: '1px solid rgba(255,255,255,0.1)', background: '#1C1C1E' }} data-reveal="fade" data-delay={i % 3}
-                data-onclick={`openLightbox('${src}')`}>
-                <img src={src} alt={`Gallery ${i + 1}`} loading="lazy" />
-              </div>
-            ))}
+              {dummyPhotos.map((src, i) => (
+                <div key={i} className="galeri-item glass-morphism glass-container-content"
+                  data-reveal="fade" data-delay={i % 3}
+                  data-onclick={`openLightbox('${src}')`}>
+                  <img src={src} alt={`Gallery ${i + 1}`} loading="lazy" />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
         {/* Lightbox */}
         <div id="lightbox" role="dialog" aria-modal="true" data-onclick="closeLightbox()">
@@ -592,48 +577,21 @@ export default function WeddingPage() {
           <img id="lightbox-img" src={undefined} alt="Foto" />
         </div>
 
-        {/* ══════════ RSVP ══════════ */}
-        <section id="rsvp" className="section-with-bg">
-          <SectionBackground src="/assets/photo/photo5-trans.png" factor={0.2} />
-          
-          <div className="glass-morphism glass-container-content rsvp-form" style={{ position: 'relative', zIndex: 5, padding: '3rem', borderRadius: '24px' }} data-reveal="up">
-            <h2 className="section-title text-white">Konfirmasi Kehadiran</h2>
-            <p style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', color: 'rgba(255,255,255,0.8)', margin: '0.5rem auto 2.5rem', textAlign: 'center' }}>
-              Kehadiran Anda adalah doa terbaik bagi kami
-            </p>
-
-            <div className="form-field">
-              <label className="form-label text-white" style={{ opacity: 0.7 }}>Nama Tamu</label>
-              <input type="text" id="rsvp-name" className="form-input" placeholder="Tulis namamu disini..." style={{ background: 'rgba(255,255,255,0.1)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.3)' }} />
-            </div>
-            <div className="form-field" style={{ marginBottom: '2.5rem' }}>
-              <label className="form-label text-white" style={{ opacity: 0.7 }}>Konfirmasi Kehadiran</label>
-              <div className="attendance-options">
-                {['Hadir', 'Tidak Hadir', 'Ragu-ragu'].map(opt => (
-                  <div key={opt} className={`att-option ${selectedAttendance === opt ? 'selected' : ''}`} data-onclick={`selectAttendance('${opt}')`} style={{ background: 'rgba(255,255,255,0.1)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.3)' }}>{opt}</div>
-                ))}
-              </div>
-            </div>
-            <button className="btn-open" style={{ width: '100%', justifyContent: 'center' }} data-onclick="submitRSVPForm()">
-              💌 Kirim via WhatsApp
-            </button>
-          </div>
-        </section>
 
         {/* ══════════ AMPLOP ══════════ */}
         <section id="amplop" className="section-with-bg">
-          <SectionBackground 
-            src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1920&q=80" 
-            factor={0.25} 
+          <SectionBackground
+            src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1920&q=80"
+            factor={0.25}
             overlayStyle={{ background: 'linear-gradient(to bottom, rgba(142, 175, 210, 0.92) 0%, rgba(110, 148, 186, 0.96) 100%)' }}
           />
-          
+
           <div style={{ position: 'relative', zIndex: 5, width: '100%', textAlign: 'center' }}>
             <h2 className="section-title text-white text-shadow-premium">Kado Pernikahan</h2>
 
             <div className="rekening-cards">
               {configData.bankAccounts.map((acc, i) => (
-                <div key={i} className="rekening-card glass-morphism glass-container-content" style={{ padding: '2.5rem', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.2)' }} data-reveal={acc.dir}>
+                <div key={i} className="rekening-card glass-morphism glass-container-content" style={{ borderRadius: '20px', border: '1px solid rgba(255,255,255,0.2)' }} data-reveal={acc.dir}>
                   <p className="bank-name text-white">{acc.bank}</p>
                   <p className="rek-number text-white" style={{ fontSize: '1.8rem' }}>{acc.numberFormatted}</p>
                   <p className="rek-owner text-white" style={{ opacity: 0.8 }}>{acc.owner}</p>
@@ -643,7 +601,7 @@ export default function WeddingPage() {
             </div>
 
             <button className="btn-open" data-onclick="confirmGiftWA()" data-reveal="up">
-               Konfirmasi via WhatsApp
+              Konfirmasi via WhatsApp
             </button>
           </div>
         </section>
@@ -651,7 +609,7 @@ export default function WeddingPage() {
         {/* ══════════ BUKU TAMU ══════════ */}
         <section id="buku-tamu" className="section-with-bg has-sparkles" style={{ padding: '6rem 2rem' }}>
           <SectionBackground src="/assets/photo/photo3-trans.png" factor={0.15} />
-          
+
           <div style={{ position: 'relative', zIndex: 10, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ textAlign: 'center', marginBottom: '3.5rem' }} data-reveal="fade">
               <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.8rem', letterSpacing: '4px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: '0.5rem' }}>WEDDING OF {configData.bride.nickname} & {configData.groom.nickname}</p>
@@ -662,13 +620,13 @@ export default function WeddingPage() {
               {/* Panel Kiri: Form */}
               <div className="guestbook-panel" data-reveal="left">
                 <p style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '1.5rem' }}>Tulis Ucapanmu</p>
-                
+
                 <div className="form-field" style={{ marginBottom: '1.25rem' }}>
                   <label className="form-label" style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.6, marginBottom: '8px', display: 'block' }}>NAMA</label>
-                  <input 
-                    type="text" 
-                    className="form-input" 
-                    placeholder="Nama lengkap kamu..." 
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Nama lengkap kamu..."
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
                     style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
@@ -677,10 +635,10 @@ export default function WeddingPage() {
 
                 <div className="form-field">
                   <label className="form-label" style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.6, marginBottom: '8px', display: 'block' }}>UCAPAN & DOA</label>
-                  <textarea 
-                    className="form-input" 
+                  <textarea
+                    className="form-input"
                     rows={5}
-                    placeholder="Tuliskan doa dan harapanmu untuk kami di sini..." 
+                    placeholder="Tuliskan doa dan harapanmu untuk kami di sini..."
                     maxLength={280}
                     value={formText}
                     onChange={(e) => setFormText(e.target.value)}
@@ -705,7 +663,7 @@ export default function WeddingPage() {
                   ✉ Kirim Ucapan
                 </button>
                 <p style={{ fontSize: '0.75rem', textAlign: 'center', color: 'rgba(255,255,255,0.4)', marginTop: '1.25rem', lineHeight: '1.5' }}>
-                  Ucapanmu akan langsung tampil<br/>di halaman ini setelah terkirim
+                  Ucapanmu akan langsung tampil<br />di halaman ini setelah terkirim
                 </p>
               </div>
 
@@ -713,8 +671,14 @@ export default function WeddingPage() {
               <div className="guestbook-panel" data-reveal="right" style={{ justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                    <p style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>Ucapan Tamu</p>
-                    <div className="filter-tabs" style={{ minWidth: '220px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <p style={{ fontSize: '0.75rem', letterSpacing: '2px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: 0 }}>Ucapan Tamu</p>
+                      <div className="live-indicator">
+                        <span className="live-dot"></span>
+                        LIVE
+                      </div>
+                    </div>
+                    <div className="filter-tabs" style={{ minWidth: '220px', marginBottom: 0 }}>
                       {['Semua', 'Hadir', 'Doa'].map(f => (
                         <div key={f} className={`filter-tab ${wishFilter === f ? 'active' : ''}`} onClick={() => { setWishFilter(f); setWishPage(1); }}>{f}</div>
                       ))}
@@ -764,11 +728,11 @@ export default function WeddingPage() {
 
                 <div className="pagination-container">
                   <span className="pag-info">Hal. {wishPage} dari {totalPages || 1}</span>
-                  
+
                   <div className="pag-dots">
                     {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => (
-                      <div 
-                        key={i} 
+                      <div
+                        key={i}
                         className={`pag-dot ${wishPage === i + 1 ? 'active' : ''}`}
                         onClick={() => setWishPage(i + 1)}
                       />
@@ -794,7 +758,7 @@ export default function WeddingPage() {
         <section id="closing" className="section-with-bg">
           <SectionBackground src="/assets/photo/photo1-trans.png" factor={0.2} />
 
-          <div className="glass-morphism glass-container-content" style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: '800px', padding: '4rem', borderRadius: '32px' }} data-reveal="up">
+          <div className="glass-morphism glass-container-content" style={{ position: 'relative', zIndex: 10, textAlign: 'center', width: '92%', maxWidth: '800px', borderRadius: '32px' }} data-reveal="up">
             <p className="closing-message text-white">
               Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu kepada kami.
             </p>
@@ -807,7 +771,7 @@ export default function WeddingPage() {
             </p>
 
             <button className="btn-open" style={{ margin: '0 auto' }} data-onclick="shareInvitation()">
-               Bagikan Undangan
+              Bagikan Undangan
             </button>
           </div>
 
