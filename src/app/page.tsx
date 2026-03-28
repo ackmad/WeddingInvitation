@@ -135,10 +135,10 @@ export default function WeddingPage() {
   };
 
   /* ── PARALLAX COMPONENT ── */
-  const SectionBackground = ({ src, factor = 0.3, style }: { src: string, factor?: number, style?: React.CSSProperties }) => (
+  const SectionBackground = ({ src, factor = 0.3, style, overlayStyle }: { src: string, factor?: number, style?: React.CSSProperties, overlayStyle?: React.CSSProperties }) => (
     <div className="section-bg-wrapper">
       <img src={src} alt="" className="section-bg-image js-parallax" data-factor={factor} style={style} />
-      <div className="section-overlay"></div>
+      <div className="section-overlay" style={overlayStyle}></div>
     </div>
   );
 
@@ -614,7 +614,11 @@ export default function WeddingPage() {
 
         {/* ══════════ AMPLOP ══════════ */}
         <section id="amplop" className="section-with-bg">
-          <SectionBackground src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1920&q=80" factor={0.25} />
+          <SectionBackground 
+            src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1920&q=80" 
+            factor={0.25} 
+            overlayStyle={{ background: 'linear-gradient(to bottom, rgba(28, 62, 102, 0.82) 0%, rgba(18, 42, 66, 0.92) 100%)' }}
+          />
           
           <div style={{ position: 'relative', zIndex: 5, width: '100%', textAlign: 'center' }}>
             <h2 className="section-title text-white text-shadow-premium">Kado Pernikahan</h2>
