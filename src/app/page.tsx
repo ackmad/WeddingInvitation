@@ -617,7 +617,7 @@ export default function WeddingPage() {
           <SectionBackground 
             src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1920&q=80" 
             factor={0.25} 
-            overlayStyle={{ background: 'linear-gradient(to bottom, rgba(28, 62, 102, 0.82) 0%, rgba(18, 42, 66, 0.92) 100%)' }}
+            overlayStyle={{ background: 'linear-gradient(to bottom, rgba(142, 175, 210, 0.92) 0%, rgba(110, 148, 186, 0.96) 100%)' }}
           />
           
           <div style={{ position: 'relative', zIndex: 5, width: '100%', textAlign: 'center' }}>
