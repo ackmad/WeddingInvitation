@@ -563,12 +563,19 @@ export default function WeddingPage() {
         </section>
 
         {/* ══════════ GALERI ══════════ */}
-        <section id="galeri" style={{ background: '#0A0A0A' }}>
-          <h2 className="section-title text-white" data-reveal="up">Galeri Bahagia</h2>
-          <p className="galeri-caption text-white" style={{ opacity: 0.7 }} data-reveal="fade">
-            Momen indah yang tertangkap dalam lensa...
-          </p>
-          <div className="galeri-masonry" style={{ maxWidth: '960px', width: '100%' }}>
+        <section id="galeri" className="section-with-bg has-sparkles">
+          <SectionBackground 
+            src="https://images.unsplash.com/photo-1520854221956-7012df34844c?auto=format&fit=crop&w=1920&q=80" 
+            factor={0.2} 
+            overlayStyle={{ background: 'linear-gradient(to bottom, rgba(16, 25, 36, 0.92) 0%, rgba(10, 15, 22, 0.96) 100%)' }}
+          />
+
+          <div style={{ position: 'relative', zIndex: 5, width: '100%', textAlign: 'center' }}>
+            <h2 className="section-title text-white" data-reveal="up">Galeri Bahagia</h2>
+            <p className="galeri-caption text-white" style={{ opacity: 0.7 }} data-reveal="fade">
+              Momen indah yang tertangkap dalam lensa...
+            </p>
+            <div className="galeri-masonry" style={{ maxWidth: '960px', width: '100%' }}>
             {dummyPhotos.map((src, i) => (
               <div key={i} className="galeri-item" style={{ border: '1px solid rgba(255,255,255,0.1)', background: '#1C1C1E' }} data-reveal="fade" data-delay={i % 3}
                 data-onclick={`openLightbox('${src}')`}>
@@ -576,7 +583,8 @@ export default function WeddingPage() {
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
         {/* Lightbox */}
         <div id="lightbox" role="dialog" aria-modal="true" data-onclick="closeLightbox()">
