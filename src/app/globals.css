@@ -1483,7 +1483,7 @@ section:nth-child(even) {
 
 /* Specifically adjust the middle-top image: show groom (left) and heads (top) */
 .galeri-item:nth-child(2) img {
-  object-position: 25% 0%; /* Focus on top to move photo down and reveal heads */
+  object-position: 100%; /* Focus on top to move photo down and reveal heads */
   transform: scale(1.4);   /* Slightly less zoom to fit everything in */
 }
 
