@@ -662,12 +662,12 @@ export default function WeddingPage() {
                     className="form-input"
                     rows={5}
                     placeholder="Tuliskan doa dan harapanmu untuk kami di sini..."
-                    maxLength={280}
+                    maxLength={500}
                     value={formText}
                     onChange={(e) => setFormText(e.target.value)}
                     style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', height: '140px' }}
                   />
-                  <div className="form-char-counter">{formText.length} / 280 karakter</div>
+                  <div className="form-char-counter">{formText.length} / 500 karakter</div>
                 </div>
 
                 <div className="form-field">
