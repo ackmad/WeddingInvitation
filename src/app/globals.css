@@ -2734,14 +2734,15 @@ textarea.form-input {
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #FFFFFF 0%, #E2E2E2 100%);
-  color: #0A0A0A;
+  background: linear-gradient(135deg, #ECC885 0%, #D4AF37 50%, #B8860B 100%) !important;
+  color: #FFFFFF !important;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
   font-size: 1rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), 0 0 10px rgba(212, 175, 55, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .comment-info {

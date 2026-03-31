@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import "./globals.css";
 import configData from "../data/weddingConfig.json";
 import SplashSection from "../components/SplashSection";
@@ -167,7 +168,13 @@ export default function WeddingPage() {
         }
       });
     }, { threshold: 0.1 });
-    document.querySelectorAll('[data-reveal]').forEach(el => revealObs.observe(el));
+    
+    // Function to observe all elements with [data-reveal]
+    const observeAll = () => {
+      document.querySelectorAll('[data-reveal]').forEach(el => revealObs.observe(el));
+    };
+
+    observeAll();
 
     /* Parallax (SCROLL-DRIVEN BACKGROUND MOVEMENT) */
     const parallaxItems = document.querySelectorAll<HTMLElement>('.js-parallax');
@@ -272,6 +279,22 @@ export default function WeddingPage() {
       document.getElementById('petal-container')?.remove();
     };
   }, [isOpened]);
+
+  // Re-observe dynamic revealed elements whenever wishes or page changes
+  useEffect(() => {
+    if (!isOpened) return;
+    
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('revealed');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('[data-reveal]').forEach(el => revealObs.observe(el));
+    return () => revealObs.disconnect();
+  }, [isOpened, wishPage, wishes, wishFilter]);
 
   const openInvitation = () => {
     setIsOpened(true);
@@ -700,29 +723,46 @@ export default function WeddingPage() {
                     </div>
                   </div>
 
-                  <div className="wishes-feed" style={{ minHeight: '400px' }}>
-                    {isWishesLoading ? (
-                      [1, 2, 3].map(i => (
-                        <div key={i} className="comment-card skeleton" style={{ height: '120px' }} />
-                      ))
-                    ) : (
-                      paginatedWishes.map((w, i) => (
-                        <div key={i} className="comment-card" data-reveal="fade">
-                          <div className="comment-header">
-                            <div className="comment-avatar">{(w.name || 'T').substring(0, 2).toUpperCase()}</div>
-                            <div className="comment-info">
-                              <h4 className="comment-name text-white">{w.name}</h4>
-                              <span className="comment-time">{getRelativeTime(w.timestamp)}</span>
+                  <div className="wishes-feed" style={{ minHeight: '400px', position: 'relative', overflow: 'hidden' }}>
+                    <AnimatePresence mode="wait">
+                      {isWishesLoading ? (
+                        <motion.div
+                          key="loading"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                        >
+                          {[1, 2, 3].map(i => (
+                            <div key={i} className="comment-card skeleton" style={{ height: '120px' }} />
+                          ))}
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key={`${wishPage}-${wishFilter}`}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          transition={{ duration: 0.4, ease: "easeOut" }}
+                        >
+                          {paginatedWishes.map((w, i) => (
+                            <div key={i} className="comment-card">
+                              <div className="comment-header">
+                                <div className="comment-avatar">{(w.name || 'T').substring(0, 2).toUpperCase()}</div>
+                                <div className="comment-info">
+                                  <h4 className="comment-name text-white">{w.name}</h4>
+                                  <span className="comment-time">{getRelativeTime(w.timestamp)}</span>
+                                </div>
+                                <span className={`comment-badge ${w.attendance === 'Hadir' ? 'hadir' : 'doa'}`}>{w.attendance === 'Hadir' ? 'Hadir' : 'Doa'}</span>
+                              </div>
+                              <p className="comment-text">"{w.text}"</p>
                             </div>
-                            <span className={`comment-badge ${w.attendance === 'Hadir' ? 'hadir' : 'doa'}`}>{w.attendance === 'Hadir' ? 'Hadir' : 'Doa'}</span>
-                          </div>
-                          <p className="comment-text">"{w.text}"</p>
-                        </div>
-                      ))
-                    )}
-                    {!isWishesLoading && paginatedWishes.length === 0 && (
-                      <div style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.5 }}>Belum ada ucapan untuk kategori ini.</div>
-                    )}
+                          ))}
+                          {paginatedWishes.length === 0 && (
+                            <div style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.5 }}>Belum ada ucapan untuk kategori ini.</div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
 
