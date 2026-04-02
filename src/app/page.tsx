@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import "./globals.css";
@@ -8,7 +8,7 @@ import SplashSection from "../components/SplashSection";
 import confetti from "canvas-confetti";
 import { addWish, subscribeToWishes } from "@/lib/firestore";
 
-export default function WeddingPage() {
+function WeddingContent() {
   const [isOpened, setIsOpened] = useState(false);
   const [guestName, setGuestName] = useState("Tamu Undangan");
   const pathParams = useParams();
@@ -838,5 +838,13 @@ export default function WeddingPage() {
 
       </div>
     </>
+  );
+}
+
+export default function WeddingPage() {
+  return (
+    <Suspense fallback={null}>
+      <WeddingContent />
+    </Suspense>
   );
 }
