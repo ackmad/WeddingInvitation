@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import "./globals.css";
 import configData from "../data/weddingConfig.json";
@@ -10,6 +11,8 @@ import { addWish, subscribeToWishes } from "@/lib/firestore";
 export default function WeddingPage() {
   const [isOpened, setIsOpened] = useState(false);
   const [guestName, setGuestName] = useState("Tamu Undangan");
+  const pathParams = useParams();
+  const searchParams = useSearchParams();
 
   /* ── GUESTBOOK LOGIC ── */
   const [wishes, setWishes] = useState<any[]>([]);
@@ -151,10 +154,18 @@ export default function WeddingPage() {
       document.body.classList.add('locked');
     }
 
-    const params = new URLSearchParams(window.location.search);
-    const nama = params.get('tamu');
-    if (nama) {
-      setGuestName(decodeURIComponent(nama));
+    const namaFromPath = pathParams?.guestName as string;
+    const namaFromSearch = searchParams.get('tamu') || searchParams.get('to');
+
+    if (namaFromPath) {
+      // Decode and replace common URL separators with spaces
+      const formattedName = decodeURIComponent(namaFromPath).replace(/[-_]/g, ' ');
+      setGuestName(formattedName);
+      setFormName(formattedName);
+    } else if (namaFromSearch) {
+      const formattedName = decodeURIComponent(namaFromSearch);
+      setGuestName(formattedName);
+      setFormName(formattedName);
     }
 
     /* Scroll Reveal - Repeatable animate in and out (Fade In & Fade Out) */

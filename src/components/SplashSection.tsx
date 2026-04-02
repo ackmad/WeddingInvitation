@@ -56,7 +56,7 @@ export default function SplashSection({ guestName, onOpen, brideName, groomName 
           <div className={styles.openBtnContainer}>
             {guestName && (
                <p className={styles.guestGreet}>
-                 Dear, <span>{guestName}</span>
+                 Dear : <span>{guestName}</span>
                </p>
             )}
             <button onClick={handleOpenClick} className={styles.openBtn}>
